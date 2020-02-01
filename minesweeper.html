@@ -147,7 +147,7 @@
                 for (x = 0; x < size_x; x++) {
                     var val = 0;//Math.floor(Math.random() * 2);
                     myMap[y][x] = { y: y, x: x, visited: false, redraw: false, val: val, bNum: val , blasted: false, flag:false };
-                    console.info("x:" +x + " y:" +y + " val :"+val);
+                    //console.info("x:" +x + " y:" +y + " val :"+val);
                 }
             }
 
@@ -162,7 +162,7 @@
 
                 //set a bomb
                 myMap[y][x].val = 1;
-                console.info("x:" +x + " y:" +y + " val :"+val);
+                //console.info("x:" +x + " y:" +y + " val :"+val);
 
             //mark  adjacent spaces      
             // y-1,x-1   y-1, x   y-1,x+1
@@ -255,10 +255,12 @@
                 return;
 
 
+            /*
             console.info("==>exploreLand:" 
                 + " visited:" + myMap[y][x].visited 
                 + " val:" + myMap[y][x].val
                 );
+            */
 
             //did we visit this place before?
             if (myMap[y][x].visited)
@@ -377,7 +379,7 @@
         };
 
         const bombStyle = {
-            fontSize: '24px',
+            fontSize: '25px',
         };
 
 
@@ -393,18 +395,18 @@
             }
 
             handleClick(e){
-                console.info("-->handleClick:" + this.state.y +"," + this.state.x);
-                console.log(event.type);
+                //console.info("-->handleClick:" + this.state.y +"," + this.state.x);
+                //console.log(event.type);
 
                 //we don't want browsers context menu to be displayed
                 e.preventDefault();
 
 
                 if (e.type === 'click') {
-                    console.log('Left click');
+                    //console.log('Left click');
                     exploreLand(this.state.y, this.state.x);
                 } else if (e.type === 'contextmenu') {
-                    console.log('Right click');
+                    //console.log('Right click');
                     flagLand(this.state.y, this.state.x);
                 }
             }
@@ -414,7 +416,7 @@
                 //console.info("mounted-->" + this.state.y + "," + this.state.x);
                 this.timerID = setInterval(
                     () => this.tick(),
-                    500
+                    100
                 );
             }
 
