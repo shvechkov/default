@@ -1,0 +1,527 @@
+<html>
+
+<head>
+    <title>minesweeper with react</title>
+    <meta charset="UTF-8" />
+
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <!-- Don't use this in production: -->
+
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <!-- Font Awesome CSS -->
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+
+            <form class="form-inline">
+
+                <fieldset>
+                    <legend><a href=https://en.wikipedia.org/wiki/Minesweeper_(video_game)>Minesweeper </a> with React</legend> 
+                    <div id="root"></div>
+            
+        <P/>            
+        <div>
+
+            <div class="form-group">
+
+                <button type="button" class="btn btn-primary" onclick="randomMap(true)">New Game</button>
+            </div>
+
+            <div class="form-group">
+                <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle"  type="button" data-toggle="dropdown" id=gameLevel>Easy&nbsp;<span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li onclick="setGameLevel('Easy');"><a href="#">Easy</a></li>
+                    <li onclick="setGameLevel('Medium');"><a href="#">Medium</a></li>
+                    <li onclick="setGameLevel('Hard');"><a href="#">Hard</a></li>
+                </ul>
+                </div>
+            </div>
+
+
+            <!-- Trigger the modal with a button -->
+            <button type="button" class="btn btn-info " data-toggle="modal" data-target="#myModal">Info</button>
+
+            <!-- Modal -->
+            <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Notes to myself</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                                <ul>
+                                    <li><b>Why?</b>: had some spare time to get up to speed with React library ...</li>
+                                </ul>
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </fieldset>
+        </form>
+
+    </div>
+    </div>
+
+
+    <script type="text/babel">
+
+
+        var size_x = 0;
+        var size_y = 0;
+
+        var x = 0;
+        var y = 0;
+        var myMap;
+        var bTotalNum = Math.floor(size_x *size_y/5);
+
+        var islandsNum = 0;
+
+        var colors = ["Blue", "rgb(216, 60, 47)", "rgb(88, 95, 155)", "rgb(112, 255, 0)", "rgb(106, 90, 205)", "rgb(216, 0, 170)"];
+
+        setGameLevel("Easy");
+
+
+        function setGameLevel(level){
+            document.getElementById('gameLevel').innerHTML=level + ' Level&nbsp;<span class="caret">';
+
+            switch (level){
+                case "Easy":
+                    size_y=10;
+                    size_x =10;
+                    bTotalNum  = Math.floor(size_x *size_y/5);
+                    break;
+
+                case "Medium":
+                    size_y=15;
+                    size_x =15;
+                    bTotalNum  = Math.floor(size_x *size_y/5);
+
+                    break;
+                
+                case "Hard":
+                    size_y=20;
+                    size_x =20;
+                    bTotalNum  = Math.floor(size_x *size_y/5);
+
+                    break;
+
+
+                default: 
+                    alert("setGameLevel: invalid arg:" + level);
+            }            
+                
+        }
+
+        //generates new map - 2d array with structures definining land piece 
+        // redraw argument - if set to truewill call ReactDOM.ender (will redraw whole pplication ) 
+        function randomMap(redraw) {
+
+
+            myMap = new Array(size_y);
+
+            for (y = 0; y < size_y; y++) {
+                myMap[y] = new Array(size_x);
+                for (x = 0; x < size_x; x++) {
+                    var val = 0;//Math.floor(Math.random() * 2);
+                    myMap[y][x] = { y: y, x: x, visited: false, redraw: false, val: val, bNum: val , blasted: false, flag:false };
+                    console.info("x:" +x + " y:" +y + " val :"+val);
+                }
+            }
+
+            for (var i=0; i < bTotalNum; i++){
+                x= Math.floor(Math.random() * size_x);
+                y= Math.floor(Math.random() * size_y);
+
+                if (myMap[y][x].val){
+                    i--;
+                    continue;
+                }
+
+                //set a bomb
+                myMap[y][x].val = 1;
+                console.info("x:" +x + " y:" +y + " val :"+val);
+
+            //mark  adjacent spaces      
+            // y-1,x-1   y-1, x   y-1,x+1
+            //  y,x-1    [y,x]    y,x+1
+            // y+1,x-1   y+1,x    y+1,x+1   
+
+            setBmNum(y - 1, x - 1);
+            setBmNum(y - 1, x);
+            setBmNum(y - 1, x + 1);
+            setBmNum(y, x - 1);
+            setBmNum(y, x + 1);
+            setBmNum(y + 1, x - 1);
+            setBmNum(y + 1, x);
+            setBmNum(y + 1, x + 1);
+
+
+            }
+
+            if (redraw) {
+                ReactDOM.render(
+                    <App x={size_x} y={size_y} />,
+                    document.getElementById('root')
+                );
+
+            }
+        }
+
+        function setBmNum(y,x){
+
+            //check boundaies 
+            if (y < 0 || y >= size_y || x < 0 || x >= size_x)
+                return;
+
+            //it is a bomb
+            if (myMap[y][x].val)
+                return;
+
+            myMap[y][x].bNum +=1;             
+        }
+
+        // clears Map - resets visited value for each piece land 
+        //if redraw argument set , calls  ReactDOM.render
+        function clearMap(redraw) {
+
+            islandsNum = 0;
+            //console.info("clearMap--->");
+
+            for (y = 0; y < size_y; y++) {
+                for (x = 0; x < size_x; x++) {
+                    myMap[y][x] = { y: y, x: x, visited: false, redraw: true, val: myMap[y][x].val, bNum: 0 , blasted: false, flag:false};
+                }
+            }
+
+            if (redraw) {
+                ReactDOM.render(
+                    <App x={size_x} y={size_y} />,
+                    document.getElementById('root')
+                );
+            }
+        }
+
+
+
+
+        function showMap(){
+            console.info("==>showMap");
+
+            for(var y=0 ; y < size_y; y++)
+                for(var x=0 ; x < size_x; x++){
+                    myMap[y][x].visited = true;
+                    myMap[y][x].redraw = true;
+                }
+
+
+        }
+
+        function flagLand(y, x) {
+            console.info("==>flagLand:" +y +"," +x) ;
+
+            myMap[y][x].flag = true;
+            myMap[y][x].redraw = true;
+        }
+
+
+        function exploreLand(y, x) {
+
+
+            //check boundaies 
+            if (y < 0 || y >= size_y || x < 0 || x >= size_x)
+                return;
+
+
+            console.info("==>exploreLand:" 
+                + " visited:" + myMap[y][x].visited 
+                + " val:" + myMap[y][x].val
+                );
+
+            //did we visit this place before?
+            if (myMap[y][x].visited)
+                return;
+
+            //mark place as visited 
+            myMap[y][x].visited = true;
+
+            //console.info("before wait");
+
+            myMap[y][x].redraw = true;
+
+            /*
+            setTimeout(() =>
+                (myMap[y][x].redraw = true),
+                100);
+            */
+
+            //console.info("after wait");
+
+
+            //ahh user clicked on a bomb:
+            // show blast  & revealing map 
+            if (myMap[y][x].val ){
+                myMap[y][x].blasted = true;
+                showMap();
+                return;
+            }
+
+
+            //if user clicked on cell wich has bombs next to it 
+            //then we just open that cell 
+            if ( myMap[y][x].bNum !=0)
+                return;
+
+            //if user clicks on cell with 0 neighboring bombs
+            //then we open up all surrounding cells with 0 bombs around them   
+
+            //now explore adjacent pieces     
+            // y-1,x-1   y-1, x   y-1,x+1
+            //  y,x-1    [y,x]    y,x+1
+            // y+1,x-1   y+1,x    y+1,x+1   
+
+            exploreLand(y - 1, x - 1);
+            exploreLand(y - 1, x);
+            exploreLand(y - 1, x + 1);
+            exploreLand(y, x - 1);
+            exploreLand(y, x + 1);
+            exploreLand(y + 1, x - 1);
+            exploreLand(y + 1, x);
+            exploreLand(y + 1, x + 1);
+        }
+
+
+
+        //style for cell containing land  
+        const cellStyle1 = {
+            color: '#ff4500',
+            width: '30px',
+            height: '30px',
+            backgroundColor: '#b8b8ba',
+            //backgroundImage: 'url(flag.png)',
+            margin: '1px',
+            borderRadius: '3px',
+            textAlign: 'center',
+            display: 'inline-table',
+        };
+
+        //style for cell containing water   
+        const cellStyle0 = {
+            color: 'blue',
+            width: '30px',
+            height: '30px',
+            backgroundColor: '#939495',
+            margin: '1px',
+            borderRadius: '3px',
+            textAlign: 'center',
+            display: 'inline-table',
+        };
+
+
+        //style for cell containing water   
+        const cellBlasted = {
+            color: 'black',
+            width: '30px',
+            height: '30px',
+            backgroundColor: 'red',
+            margin: '1px',
+            borderRadius: '3px',
+            textAlign: 'center',
+            display: 'inline-table',
+        };
+
+        const cellBomb = {
+            color: 'black',
+            width: '30px',
+            height: '30px',
+            backgroundColor: '#939495',
+            margin: '1px',
+            borderRadius: '3px',
+            textAlign: 'center',
+            display: 'inline-table',
+        };
+
+
+        var cellStyles = [cellStyle0, cellStyle1];
+
+        function cellTextStyle(num) {
+            return { fontSize: '20px', color: colors[num % 6] }
+        }
+
+        const textStyle = {
+            fontSize: '20px',
+            // fontWeight: 'bold'
+            //            margin: '5px',
+        };
+
+        const bombStyle = {
+            fontSize: '24px',
+        };
+
+
+
+        //component representing matrix/map cell 
+        class ObjectCell extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { x: props.x, y: props.y, };
+
+                // This binding is necessary to make `this` work in the callback
+                this.handleClick = this.handleClick.bind(this);                
+            }
+
+            handleClick(e){
+                console.info("-->handleClick:" + this.state.y +"," + this.state.x);
+                console.log(event.type);
+
+                //we don't want browsers context menu to be displayed
+                e.preventDefault();
+
+
+                if (e.type === 'click') {
+                    console.log('Left click');
+                    exploreLand(this.state.y, this.state.x);
+                } else if (e.type === 'contextmenu') {
+                    console.log('Right click');
+                    flagLand(this.state.y, this.state.x);
+                }
+            }
+
+
+            componentDidMount() {
+                //console.info("mounted-->" + this.state.y + "," + this.state.x);
+                this.timerID = setInterval(
+                    () => this.tick(),
+                    500
+                );
+            }
+
+            componentWillUnmount() {
+                //console.info("unMounted-->" + this.state.y + "," + this.state.x);
+                clearInterval(this.timerID);
+            }
+
+            tick() {
+                //redraw cell if state was changed 
+                if (myMap[this.state.y][this.state.x].redraw) {
+                    //console.info("tick/setState-->" + this.state.y + "," + this.state.x);
+
+                    this.setState({
+                        changed: true
+                    });
+                }
+            }
+
+            //draw map cell 
+            render() {
+                let val = myMap[this.state.y][this.state.x].val;
+
+                myMap[this.state.y][this.state.x].redraw = false;
+
+                var is_visited = myMap[this.state.y][this.state.x].visited;
+                var bNum = myMap[this.state.y][this.state.x].bNum;
+                var is_blasted = myMap[this.state.y][this.state.x].blasted;
+                var is_bomb = myMap[this.state.y][this.state.x].val? true :false;
+
+                let is_flag_set = myMap[this.state.y][this.state.x].flag ? true : false;
+
+                let style = is_visited ? cellStyle0 : cellStyle1;
+
+
+
+                if (is_blasted)
+                    return <div style={cellBlasted} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
+
+                if (is_visited && is_bomb)
+                    return <div style={cellBomb} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
+
+
+                if (is_visited && bNum)
+                    return <div style={style} onClick={this.handleClick}> <font style={textStyle}>{bNum}</font></div>;
+
+                if (!is_visited && is_flag_set)
+                    return <div style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}><span className='fa fa-flag' style={bombStyle}></span></div>;
+
+
+
+                return <div style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}> <font style={textStyle}>&nbsp;</font></div>;
+                        
+                    
+            }
+        };
+
+        //raw container style 
+        const rStyle = {
+            color: 'blue',
+            backgroundColor: 'black',
+            //margin: '1px',
+            display: 'inline',
+        };
+
+
+        //matrix row 
+        function ObjectRow(props) {
+            var cells = [];
+            for (var j = 0; j < props.x; j++) {
+                cells.push(<ObjectCell key={j} y={props.y} x={j} />);
+            }
+            return <div> {cells} </div>;
+        }
+
+
+        const contStyle = {
+            backgroundColor: 'white',
+            //margin: '1px',
+            //minWidth: '600px',
+            display: 'inline',
+        };
+
+
+        class App extends React.Component {
+            render() {
+
+                var rows = [];
+                for (var i = 0; i < this.props.y; i++) {
+
+                    rows.push(<div style={rStyle}> <ObjectRow key={i} y={i} x={this.props.x} /></div>);
+                }
+                return <div style={contStyle}> {rows} </div>;
+            }
+        };
+
+        //generate random map/matrix 
+        randomMap();
+
+        //and draw matrix on the screen
+        ReactDOM.render(
+            <App x={size_x} y={size_y} />,
+            document.getElementById('root')
+        );
+
+    </script>
+
+</body>
+
+</html>
