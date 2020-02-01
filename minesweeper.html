@@ -136,7 +136,7 @@
         }
 
         //generates new map - 2d array with structures definining land piece 
-        // redraw argument - if set to truewill call ReactDOM.ender (will redraw whole pplication ) 
+        // redraw argument - if set to truewill call ReactDOM.render  
         function randomMap(redraw) {
 
 
@@ -242,7 +242,7 @@
         function flagLand(y, x) {
             console.info("==>flagLand:" +y +"," +x) ;
 
-            myMap[y][x].flag = true;
+            myMap[y][x].flag = !myMap[y][x].flag;
             myMap[y][x].redraw = true;
         }
 
