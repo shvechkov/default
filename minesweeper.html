@@ -10,9 +10,12 @@
 
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    
+
 
     <!-- Font Awesome CSS -->
      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
@@ -22,8 +25,8 @@
 <body>
 
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="panel panel-default" >
+        <div class="panel-body" style="display: inline-block">
 
             <form class="form-inline">
 
@@ -51,8 +54,14 @@
             </div>
 
 
+
+
+
             <!-- Trigger the modal with a button -->
-            <button type="button" class="btn btn-info " data-toggle="modal" data-target="#myModal">Info</button>
+            <button type="button" class="btn btn-info " data-toggle="modal" data-target="#myModal">Info&nbsp;
+                <span class="badge badge-light" id="timer-text">00:00</span>
+
+            </button>
 
             <!-- Modal -->
             <div id="myModal" class="modal fade" role="dialog">
@@ -77,6 +86,19 @@
                     </div>
                 </div>
             </div>
+
+            <P>
+
+
+
+
+                <!-- Blue -->
+                <div class="progress" >
+                    <div class="progress-bar" role="progressbar" aria-valuenow="0"
+                    aria-valuemin="0" aria-valuemax="100" style="width:70%" id="progress"><span class="badge badge-light" id="progress-text">0%</span></div>
+                </div>
+
+
         </div>
 
         </fieldset>
@@ -96,6 +118,7 @@
         var y = 0;
         var myMap;
         var bTotalNum = Math.floor(size_x *size_y/5);
+        var visitedCells = 0;
 
         var islandsNum = 0;
 
@@ -137,7 +160,55 @@
 
         //generates new map - 2d array with structures definining land piece 
         // redraw argument - if set to truewill call ReactDOM.render  
+        
+        var timerID =0;
+        var startTime =0;
+        var endTime = 0
+
+        function updateTimer(){
+            // /var now = new Date();
+            
+            var elapsed =   Date.now() - startTime.getTime();
+            
+            let totalSeconds = Math.floor( elapsed/1000) ;
+            let s = totalSeconds % 60;
+            let m = Math.floor(( (totalSeconds - s)/ 60) % 60);
+            let h = Math.floor ((totalSeconds - s ) /3600);
+
+
+            const fmt = new Intl.NumberFormat('en-IN', { style: 'decimal', minimumIntegerDigits: 2  });
+            var tText = h? fmt.format(h) + ":" + fmt.format(m) + ":" + fmt.format(s) : fmt.format(m) + ":" + fmt.format(s);
+
+
+            document.getElementById("timer-text").innerHTML = tText;
+
+
+
+
+            //var minutes = 
+
+            //document.getElementById("timer-text").innerHTML = elapsed.getHours() + ":" + elapsed.getMinutes() + ":" + elapsed.getSeconds();
+        }
+
+
+
         function randomMap(redraw) {
+
+
+
+            startTime = new Date();
+
+            //stop previous timer if user clicks New game before game end ...
+            clearInterval(timerID);            
+            timerID = setInterval( updateTimer,1000);
+
+            console.info("randomMap--> timerID: "+ timerID);
+
+
+            visitedCells = 0;
+            document.getElementById("progress").style.width = 0 +"%";
+            document.getElementById("progress-text").innerHTML = 0 +"%";
+
 
 
             myMap = new Array(size_y);
@@ -226,6 +297,21 @@
 
 
 
+        function endOfGame(result){
+            clearInterval(timerID);
+            console.info("==>endOfGame : timerID:" + timerID);
+
+            document.getElementById("progress").style.width = 100 +"%";
+
+
+            if (result)
+                document.getElementById("progress-text").innerHTML = " Congrats! You won the game!!!";
+            else
+                document.getElementById("progress-text").innerHTML = " Oops! Try again.. Press New Game..";
+            
+            //document.getElementById("progress").className = "progress-bar progress-bar-success";
+          
+        }
 
         function showMap(){
             console.info("==>showMap");
@@ -246,6 +332,30 @@
             myMap[y][x].redraw = true;
         }
 
+
+        function updateProgress(){
+
+            console.info("==>updateProgress: visitedCells:" +visitedCells) ;
+
+            var curProgress = Math.floor (visitedCells / ((size_x*size_y - bTotalNum)/100) );
+
+            console.info("==>updateProgress: progress:" +curProgress) ;
+
+
+            document.getElementById("progress").style.width = curProgress +"%";
+            document.getElementById("progress-text").innerHTML = curProgress +"%";
+
+            //if we have all Cells uncivered besides bombs we 
+            // reached  an end of game --> show  stats /high score 
+            if (size_x * size_y - bTotalNum == visitedCells){
+                showMap();
+                endOfGame(true);
+                return;
+            }
+
+
+
+        }
 
         function exploreLand(y, x) {
 
@@ -268,7 +378,7 @@
 
             //mark place as visited 
             myMap[y][x].visited = true;
-
+            visitedCells++;
             //console.info("before wait");
 
             myMap[y][x].redraw = true;
@@ -282,14 +392,18 @@
             //console.info("after wait");
 
 
+
             //ahh user clicked on a bomb:
             // show blast  & revealing map 
             if (myMap[y][x].val ){
                 myMap[y][x].blasted = true;
                 showMap();
+                endOfGame(false);
                 return;
             }
 
+            //update game progress with each uncovered cell
+            updateProgress();
 
             //if user clicked on cell wich has bombs next to it 
             //then we just open that cell 
@@ -452,6 +566,8 @@
                 let style = is_visited ? cellStyle0 : cellStyle1;
 
 
+                //if (val)
+                //    return <div style={cellBlasted} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
 
                 if (is_blasted)
                     return <div style={cellBlasted} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
