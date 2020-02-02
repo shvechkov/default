@@ -31,7 +31,7 @@
             <form class="form-inline">
 
                 <fieldset>
-                    <legend><a href=https://en.wikipedia.org/wiki/Minesweeper_(video_game)>Minesweeper </a> with React</legend> 
+                    <legend><a href=https://en.wikipedia.org/wiki/Minesweeper_(video_game)>Minesweeper </a> with React </legend> 
                     <div id="root"></div>
             
         <P/>            
@@ -76,7 +76,27 @@
                         <div class="modal-body">
                             <p>
                                 <ul>
-                                    <li><b>Why?</b>: had some spare time to get up to speed with React library ...</li>
+                                    <li><b>Why?</b>: had some spare time to get up to speed with React and Bootstrap ...</li>
+                                    <li>React <a href="https://reactjs.org/docs/hello-world.html">Tutorial</a></li>
+                                    <li>Decorations are done using <a href=https://www.w3schools.com/bootstrap> Bootstrap library </a> </li>                                     
+                                    <li>Coded <a href=https://en.wikipedia.org/wiki/Minesweeper_(video_game)>Minesweeper </a> game</li> 
+                                    <li><a href=https://reactjs.org/docs/introducing-jsx.html>JSX </a> stands for JavaScript XML.</li> 
+                                    <li>You can put any valid JavaScript expression inside the curly braces in JSX</li>
+                                    <li>Since JSX is closer to JavaScript than to HTML, React DOM uses camelCase property naming convention instead of HTML attribute names.</li>
+                                    <li>JSX Prevents Injection Attacks - By default, React DOM escapes any values embedded in JSX before rendering them. </li>
+                                    <li>JSX Represents Objects.Babel <a href=https://en.wikipedia.org/wiki/Source-to-source_compiler>transpiler </a> compiles JSX down to <code>React.createElement()</code> calls</li> 
+
+                                    <li>An element describes what you want to see on the screen. React elements are immutable. Once you create an element, you can’t change its children or attributes</li>
+                                    <li>React Only Updates What’s Necessary ..React DOM compares the element and its children to the previous one, and only applies the DOM updates necessary to bring the DOM to the desired state.</li>
+                                    <li>Conceptually, components are like JavaScript functions. They accept arbitrary inputs (called “props”) and return React elements describing what should appear on the screen. You create component by creating a function OR class derived from <code>React.Component</code> (see <a href=https://reactjs.org/docs/components-and-props.html>here</a>)</li>
+                                    <li> If you need component to render itself asynchronously you make component as a class derived form <code>React.Component</code> and implment <code>render()</code> function.  </li>
+                                    <li>State:  components can have state. State is added by defining constructor for component 
+                                        and saving nessesary props in state. State is monitored by ReactDOM and if changed (you can change state by calling <code>setState()</code> ) React will call  components render() function     </li>
+                                    <li>Lifecycle: When component becomes visibale <code>componentDidMount()</code> called . When component goes away its <code>componentWillUnmount()</code> is being called . If you need to redraw component asynchronously use <code>setInterval()</code> to set components state from componentDidMount()</li>
+
+
+                                    <li>JS code is <i>single-threaded</i> You can only "ask" browser to execute your code aynchronously at some later time with <code>setInterval()</code></i> </li>
+                                
                                 </ul>
                             </p>
                         </div>
