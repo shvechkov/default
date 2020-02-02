@@ -20,19 +20,61 @@
     <!-- Font Awesome CSS -->
      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
+
+     <style>
+        
+        @keyframes shake {
+          0% { transform: translate(1px, 1px) rotate(0deg); }
+          10% { transform: translate(-1px, -2px) rotate(-1deg); }
+          20% { transform: translate(-3px, 0px) rotate(1deg); }
+          30% { transform: translate(3px, 2px) rotate(0deg); }
+          40% { transform: translate(1px, -1px) rotate(1deg); }
+          50% { transform: translate(-1px, 2px) rotate(-1deg); }
+          60% { transform: translate(-3px, 1px) rotate(0deg); }
+          70% { transform: translate(3px, 1px) rotate(-1deg); }
+          80% { transform: translate(-1px, -1px) rotate(1deg); }
+          90% { transform: translate(1px, 2px) rotate(0deg); }
+          100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+
+        #overlay {
+        position: fixed;
+        display: none;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;        
+        z-index: 2;
+        cursor: pointer;
+        }
+
+        </style>
+
+
 </head>
 
 <body>
 
 
+
+    
+
     <div class="panel panel-default" >
+
+        <div id="overlay" > <img src=boom.gif></div>
+
         <div class="panel-body" style="display: inline-block">
 
             <form class="form-inline">
 
                 <fieldset>
                     <legend><a href=https://en.wikipedia.org/wiki/Minesweeper_(video_game)>Minesweeper </a> with React </legend> 
+
                     <div id="root"></div>
+                
             
         <P/>            
         <div>
@@ -140,7 +182,11 @@
         var bTotalNum = Math.floor(size_x *size_y/5);
         var visitedCells = 0;
 
-        var islandsNum = 0;
+        var timerID =0;
+        var startTime =0;
+        var endTime = 0;
+        var blasted = false;
+
 
         var colors = ["Blue", "rgb(216, 60, 47)", "rgb(88, 95, 155)", "rgb(112, 255, 0)", "rgb(106, 90, 205)", "rgb(216, 0, 170)"];
 
@@ -178,12 +224,7 @@
                 
         }
 
-        //generates new map - 2d array with structures definining land piece 
-        // redraw argument - if set to truewill call ReactDOM.render  
         
-        var timerID =0;
-        var startTime =0;
-        var endTime = 0
 
         function updateTimer(){
             // /var now = new Date();
@@ -201,21 +242,14 @@
 
 
             document.getElementById("timer-text").innerHTML = tText;
-
-
-
-
-            //var minutes = 
-
-            //document.getElementById("timer-text").innerHTML = elapsed.getHours() + ":" + elapsed.getMinutes() + ":" + elapsed.getSeconds();
         }
 
 
+        //generates new map - 2d array with structures definining land piece 
+        // redraw argument - if set to truewill call ReactDOM.render  
 
         function randomMap(redraw) {
-
-
-
+            blasted = false;
             startTime = new Date();
 
             //stop previous timer if user clicks New game before game end ...
@@ -228,6 +262,10 @@
             visitedCells = 0;
             document.getElementById("progress").style.width = 0 +"%";
             document.getElementById("progress-text").innerHTML = 0 +"%";
+
+            document.getElementById("root").style.animation = '';
+            document.getElementById("overlay").style.display = "none";
+
 
 
 
@@ -326,9 +364,14 @@
 
             if (result)
                 document.getElementById("progress-text").innerHTML = " Congrats! You won the game!!!";
-            else
+            else{
+                document.getElementById("overlay").style.display = "block";
+                setTimeout(function(){ document.getElementById("overlay").style.display = "none"; }, 2000);
+
+                document.getElementById("root").style.animation = 'shake 0.3s 1';
                 document.getElementById("progress-text").innerHTML = " Oops! Try again.. Press New Game..";
-            
+
+            }
             //document.getElementById("progress").className = "progress-bar progress-bar-success";
           
         }
@@ -417,6 +460,7 @@
             // show blast  & revealing map 
             if (myMap[y][x].val ){
                 myMap[y][x].blasted = true;
+                blasted = true;
                 showMap();
                 endOfGame(false);
                 return;
@@ -486,6 +530,8 @@
             borderRadius: '3px',
             textAlign: 'center',
             display: 'inline-table',
+//            animation: 'shake 0.5s',
+//            animationIterationCount: '1',
         };
 
         const cellBomb = {
@@ -590,21 +636,21 @@
                 //    return <div style={cellBlasted} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
 
                 if (is_blasted)
-                    return <div style={cellBlasted} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
+                    return <div class='cell' style={cellBlasted} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
 
                 if (is_visited && is_bomb)
-                    return <div style={cellBomb} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
+                    return <div class='cell' style={cellBomb} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
 
 
                 if (is_visited && bNum)
-                    return <div style={style} onClick={this.handleClick}> <font style={textStyle}>{bNum}</font></div>;
+                    return <div class='cell' style={style} onClick={this.handleClick}> <font style={textStyle}>{bNum}</font></div>;
 
                 if (!is_visited && is_flag_set)
-                    return <div style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}><span className='fa fa-flag' style={bombStyle}></span></div>;
+                    return <div class='cell' style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}><span className='fa fa-flag' style={bombStyle}></span></div>;
 
 
 
-                return <div style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}> <font style={textStyle}>&nbsp;</font></div>;
+                return <div class='cell' style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}> <font style={textStyle}>&nbsp;</font></div>;
                         
                     
             }
