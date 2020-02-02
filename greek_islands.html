@@ -1,0 +1,394 @@
+<html>
+
+<head>
+    <title>Greek Islands problem using React</title>
+    <meta charset="UTF-8" />
+
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <!-- Don't use this in production: -->
+
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+
+            <form class="form-inline">
+
+                <fieldset>
+                    <legend>
+                        <a href=https://www.geeksforgeeks.org/find-the-number-of-distinct-islands-in-a-2d-matrix/>Greek
+                            Islands </a>with React </legend> <div id="root">
+        </div>
+
+        <P>
+
+            <div class="form-group">
+                <button type="button" class="btn btn-success" onclick="findIslands()">Run <span class="badge"
+                        id="inum">?</span></button>
+                <button type="button" class="btn btn-primary" onclick="clearMap(true)">Clear</button>
+
+                <button type="button" class="btn btn-primary" onclick="randomMap(true)">New Map</button>
+            </div>
+
+            <div class="form-group">
+                &nbsp;&nbsp;&nbsp;
+                <label for="size_x">X:</label>
+                <input type="number" id="size_x" name="size_x" class="form-control" value="20" style="width: 60;" />
+            </div>
+
+            <div class="form-group">
+                <label for="size_y">Y:</label>
+                <input type="number" id="size_y" name="size_y" value="20" class="form-control" style="width: 60;" />
+            </div>
+
+            <div class="form-group">
+                &nbsp;&nbsp;
+                <a href="#">Islands on the map <span class="badge" id="inum2">?</span></a>
+                &nbsp;&nbsp;
+            </div>
+
+
+            <!-- Trigger the modal with a button -->
+            <button type="button" class="btn btn-info " data-toggle="modal" data-target="#myModal">Info</button>
+
+            <!-- Modal -->
+            <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Notes to myself</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                                <ul>
+                                    <li><b>Why?</b>: had some spare time to get up to speed with React library ...</li>
+                                    <li>React <a href="https://reactjs.org/docs/hello-world.html">Tutorial</a></li>
+                                    <li>Decorations are done using <a href=https://www.w3schools.com/bootstrap> Bootstrap library </a> </li>                                     
+                                    <li>Coded <a href=https://www.geeksforgeeks.org/find-the-number-of-distinct-islands-in-a-2d-matrix>Greek Islands problem </a> </li> 
+                                    <li><a href=https://reactjs.org/docs/introducing-jsx.html>JSX </a> stands for JavaScript XML.</li> 
+                                    <li>You can put any valid JavaScript expression inside the curly braces in JSX</li>
+                                    <li>Since JSX is closer to JavaScript than to HTML, React DOM uses camelCase property naming convention instead of HTML attribute names.</li>
+                                    <li>JSX Prevents Injection Attacks - By default, React DOM escapes any values embedded in JSX before rendering them. </li>
+                                    <li>JSX Represents Objects.Babel <a href=https://en.wikipedia.org/wiki/Source-to-source_compiler>transpiler </a> compiles JSX down to <code>React.createElement()</code> calls</li> 
+
+                                    <li>An element describes what you want to see on the screen. React elements are immutable. Once you create an element, you can’t change its children or attributes</li>
+                                    <li>React Only Updates What’s Necessary ..React DOM compares the element and its children to the previous one, and only applies the DOM updates necessary to bring the DOM to the desired state.</li>
+                                    <li>Conceptually, components are like JavaScript functions. They accept arbitrary inputs (called “props”) and return React elements describing what should appear on the screen. You create component by creating a function OR class derived from <code>React.Component</code> (see <a href=https://reactjs.org/docs/components-and-props.html>here</a>)</li>
+                                    <li> If you need component to render itself asynchronously you make component as a class derived form <code>React.Component</code> and implment <code>render()</code> function.  </li>
+                                    <li>State:  components can have state. State is added by defining constructor for component 
+                                        and saving nessesary props in state. State is monitored by ReactDOM and if changed (you can change state by calling <code>setState()</code> ) React will call  components render() function     </li>
+                                    <li>Lifecycle: When component becomes visibale <code>componentDidMount()</code> called . When component goes away its <code>componentWillUnmount()</code> is being called . If you need to redraw component asynchronously use <code>setInterval()</code> to set components state from componentDidMount()</li>
+
+
+                                    <li>JS code is <i>single-threaded</i> You can only "ask" browser to execute your code aynchronously at some later time with <code>setInterval()</code></i> </li>
+                                
+                                </ul>
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    </fieldset>
+    </form>
+
+    </div>
+    </div>
+
+
+    <script type="text/babel">
+
+
+        var size_x = 10;
+        var size_y = 3;
+
+        var x = 0;
+        var y = 0;
+        var myMap;
+
+        var islandsNum = 0;
+
+        var colors = ["Blue","rgb(216, 60, 47)","rgb(88, 95, 155)","rgb(112, 255, 0)","rgb(106, 90, 205)","rgb(216, 0, 170)"];
+
+
+        //generates new map - 2d array with structures definining land piece 
+        // redraw argument - if set to truewill call ReactDOM.ender (will redraw whole pplication ) 
+        function randomMap(redraw) {
+
+            size_x = document.getElementById("size_x").value;
+            size_y = document.getElementById("size_y").value;
+
+            myMap = new Array(size_y);
+
+            for (y = 0; y < size_y; y++) {
+                myMap[y] = new Array(size_x);
+                for (x = 0; x < size_x; x++) {
+                    var val = Math.floor(Math.random() * 2);
+                    myMap[y][x] = { y: y, x: x, visited: false, redraw: false, val: val, isle_num: val };
+                }
+            }
+
+            if (redraw) {
+                ReactDOM.render(
+                    <App x={size_x} y={size_y} />,
+                    document.getElementById('root')
+                );
+
+            }
+        }
+
+
+        // clears Map - resets visited value for each piece land 
+        //if redraw argument set , calls  ReactDOM.render
+        function clearMap(redraw) {
+
+            islandsNum = 0;
+            //console.info("clearMap--->");
+
+            for (y = 0; y < size_y; y++) {
+                for (x = 0; x < size_x; x++) {
+                    myMap[y][x] = { y: y, x: x, visited: false, redraw: true, val: myMap[y][x].val, isle_num: 0 };
+                }
+            }
+
+            if (redraw) {
+                ReactDOM.render(
+                    <App x={size_x} y={size_y} />,
+                    document.getElementById('root')
+                );
+            }
+        }
+
+
+
+
+        function exploreLand(y, x) {
+
+            //check boundaies 
+            if (y < 0 || y >= size_y || x < 0 || x >= size_x)
+                return;
+
+            //did we visit this place before?
+            if (myMap[y][x].visited)
+                return;
+
+            //mark place as visited 
+            myMap[y][x].visited = true;
+            myMap[y][x].isle_num = islandsNum;
+
+            //console.info("before wait");
+
+            setTimeout(() =>
+                (myMap[y][x].redraw = true),
+                100);
+
+
+            //console.info("after wait");
+
+            //no water walking
+            if (!myMap[y][x].val)
+                return;
+
+            //now explore adjacent pieces     
+            // y-1,x-1   y-1, x   y-1,x+1
+            //  y,x-1    [y,x]    y,x+1
+            // y+1,x-1   y+1,x    y+1,x+1   
+
+            exploreLand(y - 1, x - 1);
+            exploreLand(y - 1, x);
+            exploreLand(y - 1, x + 1);
+            exploreLand(y, x - 1);
+            exploreLand(y, x + 1);
+            exploreLand(y + 1, x - 1);
+            exploreLand(y + 1, x);
+            exploreLand(y + 1, x + 1);
+        }
+
+
+        function findIslands() {
+            //console.info("findIslands");
+
+            islandsNum = 0;
+
+            var j = 0;
+            var i = 0;
+            for (j = 0; j < size_y; j++)
+                for (i = 0; i < size_x; i++) {
+
+                    //we visited this node 
+                    if (myMap[j][i].visited)
+                        continue;
+
+                    //we hit water 
+                    if (!myMap[j][i].val)
+                        continue;
+
+                    //we hit land 
+                    islandsNum++;
+                    exploreLand(j, i);
+                }
+
+            // report results in te app form
+            document.getElementById("inum").innerHTML = "" + islandsNum;
+            document.getElementById("inum2").innerHTML = "" + islandsNum;
+
+            return islandsNum;
+        }
+
+        //style for cell containing land  
+        const cellStyle1 = {
+            color: 'blue',
+            width: '30px',
+            height: '30px',
+            backgroundColor: '#9fa896',
+            //backgroundImage: 'url(flag.png)',
+            margin: '1px',
+            borderRadius: '3px',
+            textAlign: 'center',
+            display: 'inline-table',
+        };
+
+        //style for cell containing water   
+        const cellStyle0 = {
+            color: 'blue',
+            width: '30px',
+            height: '30px',
+            backgroundColor: 'lightblue',
+            margin: '1px',
+            borderRadius: '3px',
+            textAlign: 'center',
+            display: 'inline-table',
+        };
+
+        var cellStyles = [cellStyle0, cellStyle1];
+
+        function isleTextStyle(num){
+            return {fontSize: '20px', color: colors[num % 6]}
+        }
+
+        const textStyle = {
+            fontSize: '20px',
+           // fontWeight: 'bold'
+            //            margin: '5px',
+        };
+
+        //component representing matrix/map cell 
+        class ObjectCell extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { x: props.x, y: props.y, };
+            }
+
+            componentDidMount() {
+                //console.info("mounted-->" + this.state.y + "," + this.state.x);
+                this.timerID = setInterval(
+                    () => this.tick(),
+                    1000
+                );
+            }
+
+            componentWillUnmount() {
+                //console.info("unMounted-->" + this.state.y + "," + this.state.x);
+                clearInterval(this.timerID);
+            }
+
+            tick() {
+                //redraw cell if state was changed 
+                if (myMap[this.state.y][this.state.x].redraw) {
+                    //console.info("tick/setState-->" + this.state.y + "," + this.state.x);
+
+                    this.setState({
+                        changed: true
+                    });
+                }
+            }
+
+            //draw map cell 
+            render() {
+                let val = myMap[this.state.y][this.state.x].val;
+                let style = cellStyles[val];
+
+                myMap[this.state.y][this.state.x].redraw = false;
+
+                var is_visited = myMap[this.state.y][this.state.x].visited;
+                var isle_num = myMap[this.state.y][this.state.x].isle_num;
+
+                if (is_visited && val)
+                    return <div style={style}>  <font style={isleTextStyle(isle_num)}>{isle_num}</font></div>;
+                else if (is_visited && !val)
+                    return <div style={style}> <font style={textStyle}>&nbsp;</font></div>;
+                else
+                    return <div style={style}> <font style={textStyle}>?</font></div>;
+            }
+        };
+
+        //raw container style 
+        const rStyle = {
+            color: 'blue',
+            backgroundColor: 'black',
+            //margin: '1px',
+            display: 'inline',
+        };
+
+
+        //matrix row 
+        function ObjectRow(props) {
+            var cells = [];
+            for (var j = 0; j < props.x; j++) {
+                cells.push(<ObjectCell key={j} y={props.y} x={j} />);
+            }
+            return <div> {cells} </div>;
+        }
+
+
+        const contStyle = {
+            backgroundColor: 'white',
+            //margin: '1px',
+            //minWidth: '600px',
+            display: 'inline',
+        };
+
+
+        class App extends React.Component {
+            render() {
+
+                var rows = [];
+                for (var i = 0; i < this.props.y; i++) {
+
+                    rows.push(<div style={rStyle}> <ObjectRow key={i} y={i} x={this.props.x} /></div>);
+                }
+                return <div style={contStyle}> {rows} </div>;
+            }
+        };
+
+        //generate random map/matrix 
+        randomMap();
+
+        //and draw matrix on the screen
+        ReactDOM.render(
+            <App x={size_x} y={size_y} />,
+            document.getElementById('root')
+        );
+
+    </script>
+
+</body>
+
+</html>

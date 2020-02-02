@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>Greek Islands problem using React</title>
+    <title>minesweeper with react</title>
     <meta charset="UTF-8" />
 
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
@@ -10,56 +10,58 @@
 
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    
+
+
+    <!-- Font Awesome CSS -->
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
 </head>
 
 <body>
 
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="panel panel-default" >
+        <div class="panel-body" style="display: inline-block">
 
             <form class="form-inline">
 
                 <fieldset>
-                    <legend>
-                        <a href=https://www.geeksforgeeks.org/find-the-number-of-distinct-islands-in-a-2d-matrix/>Greek
-                            Islands </a>with React </legend> <div id="root">
-        </div>
-
-        <P>
+                    <legend><a href=https://en.wikipedia.org/wiki/Minesweeper_(video_game)>Minesweeper </a> with React </legend> 
+                    <div id="root"></div>
+            
+        <P/>            
+        <div>
 
             <div class="form-group">
-                <button type="button" class="btn btn-success" onclick="findIslands()">Run <span class="badge"
-                        id="inum">?</span></button>
-                <button type="button" class="btn btn-primary" onclick="clearMap(true)">Clear</button>
 
-                <button type="button" class="btn btn-primary" onclick="randomMap(true)">New Map</button>
+                <button type="button" class="btn btn-primary" onclick="randomMap(true)">New Game</button>
             </div>
 
             <div class="form-group">
-                &nbsp;&nbsp;&nbsp;
-                <label for="size_x">X:</label>
-                <input type="number" id="size_x" name="size_x" class="form-control" value="20" style="width: 60;" />
+                <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle"  type="button" data-toggle="dropdown" id=gameLevel>Easy&nbsp;<span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li onclick="setGameLevel('Easy');"><a href="#">Easy</a></li>
+                    <li onclick="setGameLevel('Medium');"><a href="#">Medium</a></li>
+                    <li onclick="setGameLevel('Hard');"><a href="#">Hard</a></li>
+                </ul>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="size_y">Y:</label>
-                <input type="number" id="size_y" name="size_y" value="20" class="form-control" style="width: 60;" />
-            </div>
 
-            <div class="form-group">
-                &nbsp;&nbsp;
-                <a href="#">Islands on the map <span class="badge" id="inum2">?</span></a>
-                &nbsp;&nbsp;
-            </div>
+
 
 
             <!-- Trigger the modal with a button -->
-            <button type="button" class="btn btn-info " data-toggle="modal" data-target="#myModal">Info</button>
+            <button type="button" class="btn btn-info " data-toggle="modal" data-target="#myModal">Info&nbsp;
+                <span class="badge badge-light" id="timer-text">00:00</span>
+
+            </button>
 
             <!-- Modal -->
             <div id="myModal" class="modal fade" role="dialog">
@@ -74,10 +76,10 @@
                         <div class="modal-body">
                             <p>
                                 <ul>
-                                    <li><b>Why?</b>: had some spare time to get up to speed with React library ...</li>
+                                    <li><b>Why?</b>: had some spare time to get up to speed with React and Bootstrap ...</li>
                                     <li>React <a href="https://reactjs.org/docs/hello-world.html">Tutorial</a></li>
                                     <li>Decorations are done using <a href=https://www.w3schools.com/bootstrap> Bootstrap library </a> </li>                                     
-                                    <li>Coded <a href=https://www.geeksforgeeks.org/find-the-number-of-distinct-islands-in-a-2d-matrix>Greek Islands problem </a> </li> 
+                                    <li>Coded <a href=https://en.wikipedia.org/wiki/Minesweeper_(video_game)>Minesweeper </a> game</li> 
                                     <li><a href=https://reactjs.org/docs/introducing-jsx.html>JSX </a> stands for JavaScript XML.</li> 
                                     <li>You can put any valid JavaScript expression inside the curly braces in JSX</li>
                                     <li>Since JSX is closer to JavaScript than to HTML, React DOM uses camelCase property naming convention instead of HTML attribute names.</li>
@@ -104,10 +106,23 @@
                     </div>
                 </div>
             </div>
-    </div>
 
-    </fieldset>
-    </form>
+            <P>
+
+
+
+
+                <!-- Blue -->
+                <div class="progress" >
+                    <div class="progress-bar" role="progressbar" aria-valuenow="0"
+                    aria-valuemin="0" aria-valuemax="100" style="width:70%" id="progress"><span class="badge badge-light" id="progress-text">0%</span></div>
+                </div>
+
+
+        </div>
+
+        </fieldset>
+        </form>
 
     </div>
     </div>
@@ -116,33 +131,145 @@
     <script type="text/babel">
 
 
-        var size_x = 10;
-        var size_y = 3;
+        var size_x = 0;
+        var size_y = 0;
 
         var x = 0;
         var y = 0;
         var myMap;
+        var bTotalNum = Math.floor(size_x *size_y/5);
+        var visitedCells = 0;
 
         var islandsNum = 0;
 
-        var colors = ["Blue","rgb(216, 60, 47)","rgb(88, 95, 155)","rgb(112, 255, 0)","rgb(106, 90, 205)","rgb(216, 0, 170)"];
+        var colors = ["Blue", "rgb(216, 60, 47)", "rgb(88, 95, 155)", "rgb(112, 255, 0)", "rgb(106, 90, 205)", "rgb(216, 0, 170)"];
 
+        setGameLevel("Easy");
+
+
+        function setGameLevel(level){
+            document.getElementById('gameLevel').innerHTML=level + ' Level&nbsp;<span class="caret">';
+
+            switch (level){
+                case "Easy":
+                    size_y=10;
+                    size_x =10;
+                    bTotalNum  = Math.floor(size_x *size_y/5);
+                    break;
+
+                case "Medium":
+                    size_y=15;
+                    size_x =15;
+                    bTotalNum  = Math.floor(size_x *size_y/5);
+
+                    break;
+                
+                case "Hard":
+                    size_y=20;
+                    size_x =20;
+                    bTotalNum  = Math.floor(size_x *size_y/5);
+
+                    break;
+
+
+                default: 
+                    alert("setGameLevel: invalid arg:" + level);
+            }            
+                
+        }
 
         //generates new map - 2d array with structures definining land piece 
-        // redraw argument - if set to truewill call ReactDOM.ender (will redraw whole pplication ) 
+        // redraw argument - if set to truewill call ReactDOM.render  
+        
+        var timerID =0;
+        var startTime =0;
+        var endTime = 0
+
+        function updateTimer(){
+            // /var now = new Date();
+            
+            var elapsed =   Date.now() - startTime.getTime();
+            
+            let totalSeconds = Math.floor( elapsed/1000) ;
+            let s = totalSeconds % 60;
+            let m = Math.floor(( (totalSeconds - s)/ 60) % 60);
+            let h = Math.floor ((totalSeconds - s ) /3600);
+
+
+            const fmt = new Intl.NumberFormat('en-IN', { style: 'decimal', minimumIntegerDigits: 2  });
+            var tText = h? fmt.format(h) + ":" + fmt.format(m) + ":" + fmt.format(s) : fmt.format(m) + ":" + fmt.format(s);
+
+
+            document.getElementById("timer-text").innerHTML = tText;
+
+
+
+
+            //var minutes = 
+
+            //document.getElementById("timer-text").innerHTML = elapsed.getHours() + ":" + elapsed.getMinutes() + ":" + elapsed.getSeconds();
+        }
+
+
+
         function randomMap(redraw) {
 
-            size_x = document.getElementById("size_x").value;
-            size_y = document.getElementById("size_y").value;
+
+
+            startTime = new Date();
+
+            //stop previous timer if user clicks New game before game end ...
+            clearInterval(timerID);            
+            timerID = setInterval( updateTimer,1000);
+
+            console.info("randomMap--> timerID: "+ timerID);
+
+
+            visitedCells = 0;
+            document.getElementById("progress").style.width = 0 +"%";
+            document.getElementById("progress-text").innerHTML = 0 +"%";
+
+
 
             myMap = new Array(size_y);
 
             for (y = 0; y < size_y; y++) {
                 myMap[y] = new Array(size_x);
                 for (x = 0; x < size_x; x++) {
-                    var val = Math.floor(Math.random() * 2);
-                    myMap[y][x] = { y: y, x: x, visited: false, redraw: false, val: val, isle_num: val };
+                    var val = 0;//Math.floor(Math.random() * 2);
+                    myMap[y][x] = { y: y, x: x, visited: false, redraw: false, val: val, bNum: val , blasted: false, flag:false };
+                    //console.info("x:" +x + " y:" +y + " val :"+val);
                 }
+            }
+
+            for (var i=0; i < bTotalNum; i++){
+                x= Math.floor(Math.random() * size_x);
+                y= Math.floor(Math.random() * size_y);
+
+                if (myMap[y][x].val){
+                    i--;
+                    continue;
+                }
+
+                //set a bomb
+                myMap[y][x].val = 1;
+                //console.info("x:" +x + " y:" +y + " val :"+val);
+
+            //mark  adjacent spaces      
+            // y-1,x-1   y-1, x   y-1,x+1
+            //  y,x-1    [y,x]    y,x+1
+            // y+1,x-1   y+1,x    y+1,x+1   
+
+            setBmNum(y - 1, x - 1);
+            setBmNum(y - 1, x);
+            setBmNum(y - 1, x + 1);
+            setBmNum(y, x - 1);
+            setBmNum(y, x + 1);
+            setBmNum(y + 1, x - 1);
+            setBmNum(y + 1, x);
+            setBmNum(y + 1, x + 1);
+
+
             }
 
             if (redraw) {
@@ -154,6 +281,18 @@
             }
         }
 
+        function setBmNum(y,x){
+
+            //check boundaies 
+            if (y < 0 || y >= size_y || x < 0 || x >= size_x)
+                return;
+
+            //it is a bomb
+            if (myMap[y][x].val)
+                return;
+
+            myMap[y][x].bNum +=1;             
+        }
 
         // clears Map - resets visited value for each piece land 
         //if redraw argument set , calls  ReactDOM.render
@@ -164,7 +303,7 @@
 
             for (y = 0; y < size_y; y++) {
                 for (x = 0; x < size_x; x++) {
-                    myMap[y][x] = { y: y, x: x, visited: false, redraw: true, val: myMap[y][x].val, isle_num: 0 };
+                    myMap[y][x] = { y: y, x: x, visited: false, redraw: true, val: myMap[y][x].val, bNum: 0 , blasted: false, flag:false};
                 }
             }
 
@@ -178,12 +317,80 @@
 
 
 
+        function endOfGame(result){
+            clearInterval(timerID);
+            console.info("==>endOfGame : timerID:" + timerID);
+
+            document.getElementById("progress").style.width = 100 +"%";
+
+
+            if (result)
+                document.getElementById("progress-text").innerHTML = " Congrats! You won the game!!!";
+            else
+                document.getElementById("progress-text").innerHTML = " Oops! Try again.. Press New Game..";
+            
+            //document.getElementById("progress").className = "progress-bar progress-bar-success";
+          
+        }
+
+        function showMap(){
+            console.info("==>showMap");
+
+            for(var y=0 ; y < size_y; y++)
+                for(var x=0 ; x < size_x; x++){
+                    myMap[y][x].visited = true;
+                    myMap[y][x].redraw = true;
+                }
+
+
+        }
+
+        function flagLand(y, x) {
+            console.info("==>flagLand:" +y +"," +x) ;
+
+            myMap[y][x].flag = !myMap[y][x].flag;
+            myMap[y][x].redraw = true;
+        }
+
+
+        function updateProgress(){
+
+            console.info("==>updateProgress: visitedCells:" +visitedCells) ;
+
+            var curProgress = Math.floor (visitedCells / ((size_x*size_y - bTotalNum)/100) );
+
+            console.info("==>updateProgress: progress:" +curProgress) ;
+
+
+            document.getElementById("progress").style.width = curProgress +"%";
+            document.getElementById("progress-text").innerHTML = curProgress +"%";
+
+            //if we have all Cells uncivered besides bombs we 
+            // reached  an end of game --> show  stats /high score 
+            if (size_x * size_y - bTotalNum == visitedCells){
+                showMap();
+                endOfGame(true);
+                return;
+            }
+
+
+
+        }
 
         function exploreLand(y, x) {
+
 
             //check boundaies 
             if (y < 0 || y >= size_y || x < 0 || x >= size_x)
                 return;
+
+
+            /*
+            console.info("==>exploreLand:" 
+                + " visited:" + myMap[y][x].visited 
+                + " val:" + myMap[y][x].val
+                );
+            */
 
             //did we visit this place before?
             if (myMap[y][x].visited)
@@ -191,20 +398,40 @@
 
             //mark place as visited 
             myMap[y][x].visited = true;
-            myMap[y][x].isle_num = islandsNum;
-
+            visitedCells++;
             //console.info("before wait");
 
+            myMap[y][x].redraw = true;
+
+            /*
             setTimeout(() =>
                 (myMap[y][x].redraw = true),
                 100);
-
+            */
 
             //console.info("after wait");
 
-            //no water walking
-            if (!myMap[y][x].val)
+
+
+            //ahh user clicked on a bomb:
+            // show blast  & revealing map 
+            if (myMap[y][x].val ){
+                myMap[y][x].blasted = true;
+                showMap();
+                endOfGame(false);
                 return;
+            }
+
+            //update game progress with each uncovered cell
+            updateProgress();
+
+            //if user clicked on cell wich has bombs next to it 
+            //then we just open that cell 
+            if ( myMap[y][x].bNum !=0)
+                return;
+
+            //if user clicks on cell with 0 neighboring bombs
+            //then we open up all surrounding cells with 0 bombs around them   
 
             //now explore adjacent pieces     
             // y-1,x-1   y-1, x   y-1,x+1
@@ -222,44 +449,15 @@
         }
 
 
-        function findIslands() {
-            //console.info("findIslands");
-
-            islandsNum = 0;
-
-            var j = 0;
-            var i = 0;
-            for (j = 0; j < size_y; j++)
-                for (i = 0; i < size_x; i++) {
-
-                    //we visited this node 
-                    if (myMap[j][i].visited)
-                        continue;
-
-                    //we hit water 
-                    if (!myMap[j][i].val)
-                        continue;
-
-                    //we hit land 
-                    islandsNum++;
-                    exploreLand(j, i);
-                }
-
-            // report results in te app form
-            document.getElementById("inum").innerHTML = "" + islandsNum;
-            document.getElementById("inum2").innerHTML = "" + islandsNum;
-
-            return islandsNum;
-        }
 
         //style for cell containing land  
         const cellStyle1 = {
-            color: 'blue',
+            color: '#ff4500',
             width: '30px',
             height: '30px',
-            backgroundColor: '#9fa896',
+            backgroundColor: '#b8b8ba',
             //backgroundImage: 'url(flag.png)',
-            margin: '1px',
+            margin: '0.5px',
             borderRadius: '3px',
             textAlign: 'center',
             display: 'inline-table',
@@ -270,37 +468,89 @@
             color: 'blue',
             width: '30px',
             height: '30px',
-            backgroundColor: 'lightblue',
-            margin: '1px',
+            backgroundColor: '#939495',
+            margin: '0.5px',
             borderRadius: '3px',
             textAlign: 'center',
             display: 'inline-table',
         };
 
+
+        //style for cell containing water   
+        const cellBlasted = {
+            color: 'black',
+            width: '30px',
+            height: '30px',
+            backgroundColor: 'red',
+            margin: '0.5px',
+            borderRadius: '3px',
+            textAlign: 'center',
+            display: 'inline-table',
+        };
+
+        const cellBomb = {
+            color: 'black',
+            width: '30px',
+            height: '30px',
+            backgroundColor: '#939495',
+            margin: '0.5px',
+            borderRadius: '3px',
+            textAlign: 'center',
+            display: 'inline-table',
+        };
+
+
         var cellStyles = [cellStyle0, cellStyle1];
 
-        function isleTextStyle(num){
-            return {fontSize: '20px', color: colors[num % 6]}
+        function cellTextStyle(num) {
+            return { fontSize: '20px', color: colors[num % 6] }
         }
 
         const textStyle = {
             fontSize: '20px',
-           // fontWeight: 'bold'
+            // fontWeight: 'bold'
             //            margin: '5px',
         };
+
+        const bombStyle = {
+            fontSize: '25px',
+        };
+
+
 
         //component representing matrix/map cell 
         class ObjectCell extends React.Component {
             constructor(props) {
                 super(props);
                 this.state = { x: props.x, y: props.y, };
+
+                // This binding is necessary to make `this` work in the callback
+                this.handleClick = this.handleClick.bind(this);                
             }
+
+            handleClick(e){
+                //console.info("-->handleClick:" + this.state.y +"," + this.state.x);
+                //console.log(event.type);
+
+                //we don't want browsers context menu to be displayed
+                e.preventDefault();
+
+
+                if (e.type === 'click') {
+                    //console.log('Left click');
+                    exploreLand(this.state.y, this.state.x);
+                } else if (e.type === 'contextmenu') {
+                    //console.log('Right click');
+                    flagLand(this.state.y, this.state.x);
+                }
+            }
+
 
             componentDidMount() {
                 //console.info("mounted-->" + this.state.y + "," + this.state.x);
                 this.timerID = setInterval(
                     () => this.tick(),
-                    1000
+                    100
                 );
             }
 
@@ -323,19 +573,40 @@
             //draw map cell 
             render() {
                 let val = myMap[this.state.y][this.state.x].val;
-                let style = cellStyles[val];
 
                 myMap[this.state.y][this.state.x].redraw = false;
 
                 var is_visited = myMap[this.state.y][this.state.x].visited;
-                var isle_num = myMap[this.state.y][this.state.x].isle_num;
+                var bNum = myMap[this.state.y][this.state.x].bNum;
+                var is_blasted = myMap[this.state.y][this.state.x].blasted;
+                var is_bomb = myMap[this.state.y][this.state.x].val? true :false;
 
-                if (is_visited && val)
-                    return <div style={style}>  <font style={isleTextStyle(isle_num)}>{isle_num}</font></div>;
-                else if (is_visited && !val)
-                    return <div style={style}> <font style={textStyle}>&nbsp;</font></div>;
-                else
-                    return <div style={style}> <font style={textStyle}>?</font></div>;
+                let is_flag_set = myMap[this.state.y][this.state.x].flag ? true : false;
+
+                let style = is_visited ? cellStyle0 : cellStyle1;
+
+
+                //if (val)
+                //    return <div style={cellBlasted} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
+
+                if (is_blasted)
+                    return <div style={cellBlasted} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
+
+                if (is_visited && is_bomb)
+                    return <div style={cellBomb} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
+
+
+                if (is_visited && bNum)
+                    return <div style={style} onClick={this.handleClick}> <font style={textStyle}>{bNum}</font></div>;
+
+                if (!is_visited && is_flag_set)
+                    return <div style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}><span className='fa fa-flag' style={bombStyle}></span></div>;
+
+
+
+                return <div style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}> <font style={textStyle}>&nbsp;</font></div>;
+                        
+                    
             }
         };
 
