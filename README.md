@@ -6,6 +6,9 @@ Had some fun with React [Minesweeper game](https://en.wikipedia.org/wiki/Mineswe
 
 [Play here](https://shvechkov.github.io/default/) 
 
+![action](play.gif)
+
+
 
 
 
