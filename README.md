@@ -2,7 +2,7 @@
 
 **Technical Director | Hands-On Systems, Cloud & AI Architect | Greater Boston, MA**
 
-**Contact**: [alexey@shvechkov.com](mailto:alexey@shvechkov.com) | +1.774.278.1743 | [LinkedIn](https://linkedin.com) | [GitHub](https://github.com)
+**Contact**: [alexey@shvechkov.com](mailto:alexey@shvechkov.com) | +1.XXX.XXX.XXX | [LinkedIn](https://linkedin.com) | [GitHub](https://github.com)
 
 ## Summary
 
