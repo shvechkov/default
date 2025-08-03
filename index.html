@@ -1,440 +1,309 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Minesweeper with React</title>
-  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-  <style>
-    @keyframes shake {
-      0% { transform: translate(1px, 1px) rotate(0deg); }
-      10% { transform: translate(-1px, -2px) rotate(-1deg); }
-      20% { transform: translate(-3px, 0px) rotate(1deg); }
-      30% { transform: translate(3px, 2px) rotate(0deg); }
-      40% { transform: translate(1px, -1px) rotate(1deg); }
-      50% { transform: translate(-1px, 2px) rotate(-1deg); }
-      60% { transform: translate(-3px, 1px) rotate(0deg); }
-      70% { transform: translate(3px, 1px) rotate(-1deg); }
-      80% { transform: translate(-1px, -1px) rotate(1deg); }
-      90% { transform: translate(1px, 2px) rotate(0deg); }
-      100% { transform: translate(1px, -2px) rotate(-1deg); }
-    }
-
-    #overlay {
-      position: fixed;
-      display: none;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 2;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classic Games Collection</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            padding: 40px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+        
+        .games-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .game-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border-color: #667eea;
+        }
+        
+        .game-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: block;
+            text-align: center;
+        }
+        
+        .game-title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .game-description {
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.6;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .game-features {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        
+        .game-features li {
+            color: #555;
+            padding: 5px 0;
+            font-size: 0.95em;
+        }
+        
+        .game-features li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .play-button {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .play-button:hover {
+            background: linear-gradient(45deg, #218838, #1ea07c);
+            transform: scale(1.05);
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            padding: 40px 0;
+            margin-top: 50px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .game-card {
+                margin-bottom: 20px;
+                padding: 20px;
+            }
+            
+            .games-container {
+                padding: 0 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="panel panel-default">
-    <div id="overlay"><img src="boom.gif"></div>
-    <div class="panel-body" style="display: inline-block">
-      <form class="form-inline">
-        <fieldset>
-          <legend>
-            <a href="https://en.wikipedia.org/wiki/Minesweeper_(video_game)">Minesweeper</a> with React
-          </legend>
-          <div id="root"></div>
-          <p></p>
-          <div>
-            <div class="form-group">
-              <button type="button" class="btn btn-primary" onclick="randomMap(true)">New Game</button>
-            </div>
-            <div class="form-group">
-              <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" id="gameLevel">
-                  Easy&nbsp;<span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                  <li onclick="setGameLevel('Easy')"><a href="#">Easy</a></li>
-                  <li onclick="setGameLevel('Medium')"><a href="#">Medium</a></li>
-                  <li onclick="setGameLevel('Hard')"><a href="#">Hard</a></li>
-                </ul>
-              </div>
-            </div>
-            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
-              Info&nbsp;<span class="badge badge-light" id="timer-text">00:00</span>
-            </button>
-            <div id="myModal" class="modal fade" role="dialog">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Notes to myself</h4>
-                  </div>
-                  <div class="modal-body">
-                    <ul>
-                      <li><b>Why?</b>: had some spare time to get up to speed with React and Bootstrap</li>
-                      <li>React <a href="https://reactjs.org/docs/hello-world.html">Tutorial</a></li>
-                      <li>Decorations are done using <a href="https://www.w3schools.com/bootstrap">Bootstrap library</a></li>
-                      <li>Coded <a href="https://en.wikipedia.org/wiki/Minesweeper_(video_game)">Minesweeper</a> game</li>
-                      <li><a href="https://reactjs.org/docs/introducing-jsx.html">JSX</a> stands for JavaScript XML</li>
-                      <li>You can put any valid JavaScript expression inside the curly braces in JSX</li>
-                      <li>Since JSX is closer to JavaScript than to HTML, React DOM uses camelCase property naming convention</li>
-                      <li>JSX Prevents Injection Attacks - React DOM escapes values embedded in JSX before rendering</li>
-                      <li>JSX Represents Objects. Babel <a href="https://en.wikipedia.org/wiki/Source-to-source_compiler">transpiler</a> compiles JSX to <code>React.createElement()</code> calls</li>
-                      <li>An element describes what you want to see on the screen. React elements are immutable</li>
-                      <li>React Only Updates What’s Necessary. React DOM compares elements and applies minimal DOM updates</li>
-                      <li>Components are like JavaScript functions, accepting props and returning React elements</li>
-                      <li>Asynchronous rendering requires a class derived from <code>React.Component</code> with <code>render()</code></li>
-                      <li>State is added via constructor, monitored by ReactDOM, and updated with <code>setState()</code></li>
-                      <li>Lifecycle: <code>componentDidMount()</code> called when component is visible, <code>componentWillUnmount()</code> when removed</li>
-                      <li>JS code is single-threaded; use <code>setInterval()</code> for asynchronous execution</li>
-                    </ul>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <p></p>
-            <div class="progress">
-              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%" id="progress">
-                <span class="badge badge-light" id="progress-text">0%</span>
-              </div>
-            </div>
-          </div>
-        </fieldset>
-      </form>
+    <div class="header">
+        <h1><i class="fa fa-gamepad"></i> Classic Games Collection</h1>
+        <p>Choose your favorite game and start playing instantly!</p>
     </div>
-  </div>
 
-  <script type="text/babel">
-    let size_x = 0;
-    let size_y = 0;
-    let myMap = [];
-    let bTotalNum = 0;
-    let visitedCells = 0;
-    let timerID = 0;
-    let startTime = 0;
-    let blasted = false;
-    const colors = [
-      'rgb(0, 0, 255)',       // 1 bomb: Blue
-      'rgb(0, 128, 255)',     // 2 bombs: Light Blue
-      'rgb(0, 255, 255)',     // 3 bombs: Cyan
-      'rgb(0, 255, 128)',     // 4 bombs: Teal
-      'rgb(0, 255, 0)',       // 5 bombs: Green
-      'rgb(128, 255, 0)',     // 6 bombs: Lime
-      'rgb(255, 128, 0)',     // 7 bombs: Orange
-      'rgb(255, 0, 0)'        // 8 bombs: Red
-    ];
-
-    function setGameLevel(level) {
-      document.getElementById('gameLevel').innerHTML = level + ' Level&nbsp;<span class="caret"></span>';
-      switch (level) {
-        case "Easy":
-          size_x = 10;
-          size_y = 10;
-          bTotalNum = Math.floor(size_x * size_y / 5);
-          break;
-        case "Medium":
-          size_x = 15;
-          size_y = 15;
-          bTotalNum = Math.floor(size_x * size_y / 5);
-          break;
-        case "Hard":
-          size_x = 20;
-          size_y = 20;
-          bTotalNum = Math.floor(size_x * size_y / 5);
-          break;
-        default:
-          alert("setGameLevel: invalid arg: " + level);
-      }
-    }
-
-    function updateTimer() {
-      const elapsed = Date.now() - startTime.getTime();
-      const totalSeconds = Math.floor(elapsed / 1000);
-      const s = totalSeconds % 60;
-      const m = Math.floor((totalSeconds - s) / 60 % 60);
-      const h = Math.floor((totalSeconds - s) / 3600);
-      const fmt = new Intl.NumberFormat('en-IN', { style: 'decimal', minimumIntegerDigits: 2 });
-      const tText = h ? `${fmt.format(h)}:${fmt.format(m)}:${fmt.format(s)}` : `${fmt.format(m)}:${fmt.format(s)}`;
-      document.getElementById("timer-text").innerHTML = tText;
-    }
-
-    function randomMap(redraw) {
-      blasted = false;
-      startTime = new Date();
-      clearInterval(timerID);
-      timerID = setInterval(updateTimer, 1000);
-      visitedCells = 0;
-      document.getElementById("progress").style.width = "0%";
-      document.getElementById("progress-text").innerHTML = "0%";
-      document.getElementById("root").style.animation = '';
-      document.getElementById("overlay").style.display = "none";
-
-      myMap = Array(size_y).fill().map((_, y) =>
-        Array(size_x).fill().map((_, x) => ({
-          y, x, visited: false, redraw: false, val: 0, bNum: 0, blasted: false, flag: false
-        }))
-      );
-
-      for (let i = 0; i < bTotalNum; i++) {
-        const x = Math.floor(Math.random() * size_x);
-        const y = Math.floor(Math.random() * size_y);
-        if (myMap[y][x].val) {
-          i--;
-          continue;
-        }
-        myMap[y][x].val = 1;
-        setBmNum(y - 1, x - 1);
-        setBmNum(y - 1, x);
-        setBmNum(y - 1, x + 1);
-        setBmNum(y, x - 1);
-        setBmNum(y, x + 1);
-        setBmNum(y + 1, x - 1);
-        setBmNum(y + 1, x);
-        setBmNum(y + 1, x + 1);
-      }
-
-      if (redraw) {
-        ReactDOM.render(<App x={size_x} y={size_y} />, document.getElementById('root'));
-      }
-    }
-
-    function setBmNum(y, x) {
-      if (y < 0 || y >= size_y || x < 0 || x >= size_x || myMap[y][x].val) return;
-      myMap[y][x].bNum += 1;
-    }
-
-    function clearMap(redraw) {
-      for (let y = 0; y < size_y; y++) {
-        for (let x = 0; x < size_x; x++) {
-          myMap[y][x] = { y, x, visited: false, redraw: true, val: myMap[y][x].val, bNum: 0, blasted: false, flag: false };
-        }
-      }
-      if (redraw) {
-        ReactDOM.render(<App x={size_x} y={size_y} />, document.getElementById('root'));
-      }
-    }
-
-    function endOfGame(result) {
-      clearInterval(timerID);
-      document.getElementById("progress").style.width = "100%";
-      document.getElementById("progress-text").innerHTML = result ? " Congrats! You won the game!!!" : " Oops! Try again.. Press New Game..";
-      if (!result) {
-        document.getElementById("overlay").style.display = "block";
-        setTimeout(() => document.getElementById("overlay").style.display = "none", 2000);
-        document.getElementById("root").style.animation = 'shake 0.3s 1';
-      }
-    }
-
-    function showMap() {
-      for (let y = 0; y < size_y; y++) {
-        for (let x = 0; x < size_x; x++) {
-          myMap[y][x].visited = true;
-          myMap[y][x].redraw = true;
-        }
-      }
-    }
-
-    function flagLand(y, x) {
-      myMap[y][x].flag = !myMap[y][x].flag;
-      myMap[y][x].redraw = true;
-    }
-
-    function updateProgress() {
-      const curProgress = Math.floor(visitedCells / ((size_x * size_y - bTotalNum) / 100));
-      document.getElementById("progress").style.width = curProgress + "%";
-      document.getElementById("progress-text").innerHTML = curProgress + "%";
-      if (size_x * size_y - bTotalNum === visitedCells) {
-        showMap();
-        endOfGame(true);
-      }
-    }
-
-    function exploreLand(y, x) {
-      if (y < 0 || y >= size_y || x < 0 || x >= size_x || myMap[y][x].visited) return;
-      myMap[y][x].visited = true;
-      visitedCells++;
-      myMap[y][x].redraw = true;
-
-      if (myMap[y][x].val) {
-        myMap[y][x].blasted = true;
-        blasted = true;
-        showMap();
-        endOfGame(false);
-        return;
-      }
-
-      updateProgress();
-      if (myMap[y][x].bNum !== 0) return;
-
-      exploreLand(y - 1, x - 1);
-      exploreLand(y - 1, x);
-      exploreLand(y - 1, x + 1);
-      exploreLand(y, x - 1);
-      exploreLand(y, x + 1);
-      exploreLand(y + 1, x - 1);
-      exploreLand(y + 1, x);
-      exploreLand(y + 1, x + 1);
-    }
-
-    const cellStyle1 = {
-      color: '#ff4500',
-      width: '30px',
-      height: '30px',
-      backgroundColor: '#b8b8ba',
-      margin: '0.5px',
-      borderRadius: '3px',
-      textAlign: 'center',
-      display: 'inline-table'
-    };
-
-    const cellStyle0 = {
-      color: 'blue',
-      width: '30px',
-      height: '30px',
-      backgroundColor: '#939495',
-      margin: '0.5px',
-      borderRadius: '3px',
-      textAlign: 'center',
-      display: 'inline-table'
-    };
-
-    const cellBlasted = {
-      color: 'black',
-      width: '30px',
-      height: '30px',
-      backgroundColor: 'red',
-      margin: '0.5px',
-      borderRadius: '3px',
-      textAlign: 'center',
-      display: 'inline-table'
-    };
-
-    const cellBomb = {
-      color: 'black',
-      width: '30px',
-      height: '30px',
-      backgroundColor: '#939495',
-      margin: '0.5px',
-      borderRadius: '3px',
-      textAlign: 'center',
-      display: 'inline-table'
-    };
-
-    const cellStyles = [cellStyle0, cellStyle1];
-
-    function cellTextStyle(num) {
-      return { fontSize: '20px', color: colors[num - 1] || 'black' };
-    }
-
-    const textStyle = { fontSize: '20px' };
-    const bombStyle = { fontSize: '25px' };
-    const rStyle = { color: 'blue', backgroundColor: 'black', display: 'inline' };
-    const contStyle = { backgroundColor: 'white', display: 'inline' };
-
-    class ObjectCell extends React.Component {
-      constructor(props) {
-        super(props);
-        this.state = { x: props.x, y: props.y };
-        this.handleClick = this.handleClick.bind(this);
-      }
-
-      handleClick(e) {
-        e.preventDefault();
-        if (e.type === 'click') {
-          exploreLand(this.state.y, this.state.x);
-        } else if (e.type === 'contextmenu') {
-          flagLand(this.state.y, this.state.x);
-        }
-      }
-
-      componentDidMount() {
-        this.timerID = setInterval(() => this.tick(), 100);
-      }
-
-      componentWillUnmount() {
-        clearInterval(this.timerID);
-      }
-
-      tick() {
-        if (myMap[this.state.y][this.state.x].redraw) {
-          this.setState({ changed: true });
-        }
-      }
-
-      render() {
-        const { x, y } = this.state;
-        const cell = myMap[y][x];
-        cell.redraw = false;
-        const { visited, bNum, blasted, val, flag } = cell;
-        let style = visited ? cellStyle0 : cellStyle1;
-
-        if (blasted) {
-          return (
-            <div className="cell" style={cellBlasted} onClick={this.handleClick}>
-              <span className="fa fa-bomb" style={bombStyle}></span>
+    <div class="games-container">
+        <div class="row">
+            <!-- Tic-Tac-Toe -->
+            <div class="col-md-6 col-lg-4">
+                <div class="game-card" onclick="location.href='tic0tac-toe_game.html'">
+                    <div class="game-icon" style="color: #e74c3c;">⭕</div>
+                    <div class="game-title">Tic-Tac-Toe</div>
+                    <div class="game-description">
+                        Classic 3x3 grid game where you try to get three in a row before your opponent.
+                    </div>
+                    <ul class="game-features">
+                        <li>Simple and intuitive gameplay</li>
+                        <li>Perfect for quick matches</li>
+                        <li>Timeless strategy game</li>
+                    </ul>
+                    <button class="play-button">
+                        <i class="fa fa-play"></i> Play Now
+                    </button>
+                </div>
             </div>
-          );
-        }
-        if (visited && val) {
-          return (
-            <div className="cell" style={cellBomb} onClick={this.handleClick}>
-              <span className="fa fa-bomb" style={bombStyle}></span>
-            </div>
-          );
-        }
-        if (visited && bNum) {
-          return (
-            <div className="cell" style={style} onClick={this.handleClick}>
-              <font style={cellTextStyle(bNum)}>{bNum}</font>
-            </div>
-          );
-        }
-        if (!visited && flag) {
-          return (
-            <div className="cell" style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}>
-              <span className="fa fa-flag" style={bombStyle}></span>
-            </div>
-          );
-        }
-        return (
-          <div className="cell" style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}>
-            <font style={textStyle}>&nbsp;</font>
-          </div>
-        );
-      }
-    }
 
-    function ObjectRow(props) {
-      const cells = Array.from({ length: props.x }, (_, j) => (
-        <ObjectCell key={j} y={props.y} x={j} />
-      ));
-      return <div>{cells}</div>;
-    }
+            <!-- Connect Four -->
+            <div class="col-md-6 col-lg-4">
+                <div class="game-card" onclick="location.href='connect4_game.html'">
+                    <div class="game-icon" style="color: #f39c12;">🔴</div>
+                    <div class="game-title">Connect Four</div>
+                    <div class="game-description">
+                        Drop your colored discs and be the first to connect four in a row vertically, horizontally, or diagonally.
+                    </div>
+                    <ul class="game-features">
+                        <li>Strategic depth</li>
+                        <li>Easy to learn, hard to master</li>
+                        <li>Gravity-based gameplay</li>
+                    </ul>
+                    <button class="play-button">
+                        <i class="fa fa-play"></i> Play Now
+                    </button>
+                </div>
+            </div>
 
-    class App extends React.Component {
-      render() {
-        const rows = Array.from({ length: this.props.y }, (_, i) => (
-          <div style={rStyle} key={i}>
-            <ObjectRow y={i} x={this.props.x} />
-          </div>
-        ));
-        return <div style={contStyle}>{rows}</div>;
-      }
-    }
+            <!-- Checkers -->
+            <div class="col-md-6 col-lg-4">
+                <div class="game-card" onclick="location.href='checkers_game.html'">
+                    <div class="game-icon" style="color: #8b0000;">♛</div>
+                    <div class="game-title">Checkers</div>
+                    <div class="game-description">
+                        Move your pieces diagonally and capture opponents by jumping over them. Reach the end to become a king!
+                    </div>
+                    <ul class="game-features">
+                        <li>Classic board game</li>
+                        <li>AI opponent included</li>
+                        <li>King promotion system</li>
+                    </ul>
+                    <button class="play-button">
+                        <i class="fa fa-play"></i> Play Now
+                    </button>
+                </div>
+            </div>
 
-    setGameLevel("Easy");
-    randomMap();
-    ReactDOM.render(<App x={size_x} y={size_y} />, document.getElementById('root'));
-  </script>
+            <!-- Reversi/Othello -->
+            <div class="col-md-6 col-lg-4">
+                <div class="game-card" onclick="location.href='reversi_game.html'">
+                    <div class="game-icon" style="color: #2c3e50;">⚫</div>
+                    <div class="game-title">Reversi</div>
+                    <div class="game-description">
+                        Place your discs to trap opponent pieces between yours and flip them to your color. Control the board!
+                    </div>
+                    <ul class="game-features">
+                        <li>Strategic positioning</li>
+                        <li>Dynamic board control</li>
+                        <li>Reversal mechanics</li>
+                    </ul>
+                    <button class="play-button">
+                        <i class="fa fa-play"></i> Play Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Minesweeper -->
+            <div class="col-md-6 col-lg-4">
+                <div class="game-card" onclick="location.href='minesweeper_game.html'">
+                    <div class="game-icon" style="color: #e67e22;">💣</div>
+                    <div class="game-title">Minesweeper</div>
+                    <div class="game-description">
+                        Clear the minefield by revealing safe squares. Use number clues to deduce mine locations.
+                    </div>
+                    <ul class="game-features">
+                        <li>Logic and deduction</li>
+                        <li>Multiple difficulty levels</li>
+                        <li>Classic puzzle gameplay</li>
+                    </ul>
+                    <button class="play-button">
+                        <i class="fa fa-play"></i> Play Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hex Game -->
+            <div class="col-md-6 col-lg-4">
+                <div class="game-card" onclick="location.href='hex_game.html'">
+                    <div class="game-icon" style="color: #9b59b6;">⬡</div>
+                    <div class="game-title">Hex</div>
+                    <div class="game-description">
+                        Connect your edges by forming an unbroken chain across the hexagonal board before your opponent.
+                    </div>
+                    <ul class="game-features">
+                        <li>Unique hexagonal grid</li>
+                        <li>Pure strategy game</li>
+                        <li>No luck involved</li>
+                    </ul>
+                    <button class="play-button">
+                        <i class="fa fa-play"></i> Play Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Capture Game -->
+            <div class="col-md-6 col-lg-4">
+                <div class="game-card" onclick="location.href='capture_game.html'">
+                    <div class="game-icon" style="color: #16a085;">🎯</div>
+                    <div class="game-title">Capture Game</div>
+                    <div class="game-description">
+                        Strategic capture-based gameplay where you outmaneuver your opponent to control the board.
+                    </div>
+                    <ul class="game-features">
+                        <li>Territory control</li>
+                        <li>Strategic thinking</li>
+                        <li>Tactical gameplay</li>
+                    </ul>
+                    <button class="play-button">
+                        <i class="fa fa-play"></i> Play Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><i class="fa fa-heart" style="color: #e74c3c;"></i> Enjoy your gaming experience!</p>
+        <p>All games are playable directly in your browser - no downloads required.</p>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    
+    <script>
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click sound effect (optional)
+            const gameCards = document.querySelectorAll('.game-card');
+            gameCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+    </script>
 </body>
 </html>
