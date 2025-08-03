@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Connect Four Game with React</title>
+  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <style>
+    @keyframes shake {
+      0% { transform: translate(1px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(3px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+      50% { transform: translate(-1px, 2px) rotate(-1deg); }
+      60% { transform: translate(-3px, 1px) rotate(0deg); }
+      70% { transform: translate(3px, 1px) rotate(-1deg); }
+      80% { transform: translate(-1px, -1px) rotate(1deg); }
+      90% { transform: translate(1px, 2px) rotate(0deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+
+    #overlay {
+      position: fixed;
+      display: none;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="panel panel-default">
+    <div id="overlay"><img src="game_over.gif"></div>
+    <div class="panel-body" style="display: inline-block">
+      <form class="form-inline">
+        <fieldset>
+          <legend>
+            <a href="https://en.wikipedia.org/wiki/Connect_Four">Connect Four Game</a> with React
+          </legend>
+          <div id="root"></div>
+          <p></p>
+          <div>
+            <div class="form-group">
+              <button type="button" class="btn btn-primary" onclick="newGame(true)">New Game</button>
+            </div>
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
+              Info&nbsp;<span class="badge badge-light" id="status-text">Your Turn (Red)</span>
+            </button>
+            <div id="myModal" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Connect Four Rules</h4>
+                  </div>
+                  <div class="modal-body">
+                    <ul>
+                      <li>Played on a 6x7 grid (6 rows, 7 columns).</li>
+                      <li>You play as Red, and the AI plays as Yellow, taking turns.</li>
+                      <li>Click a column to drop a disc; it falls to the lowest empty cell.</li>
+                      <li>Goal: Connect four of your discs in a row, column, or diagonal before the AI.</li>
+                      <li>The game ends with a win or a draw if the board is full.</li>
+                      <li>Disc counts are shown in the progress bar (Red: X | Yellow: Y).</li>
+                    </ul>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p></p>
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="42" style="width: 0%" id="progress">
+                <span class="badge badge-light" id="progress-text">Red: 0 | Yellow: 0</span>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+  <script type="text/babel">
+    let rows = 6; // 6 rows
+    let cols = 7; // 7 columns
+    let board = [];
+    let currentPlayer = 'red';
+    let redCount = 0;
+    let yellowCount = 0;
+    let moveCount = 0;
+    let gameOver = false;
+    let updateCounter = 0; // Global counter to trigger re-renders
+
+    function newGame(redraw) {
+      gameOver = false;
+      currentPlayer = 'red';
+      redCount = 0;
+      yellowCount = 0;
+      moveCount = 0;
+      updateCounter++;
+      document.getElementById("progress").style.width = "0%";
+      document.getElementById("progress-text").innerHTML = "Red: 0 | Yellow: 0";
+      document.getElementById("status-text").innerHTML = "Your Turn (Red)";
+      document.getElementById("root").style.animation = '';
+      document.getElementById("overlay").style.display = "none";
+
+      board = Array(rows).fill().map((_, y) =>
+        Array(cols).fill().map((_, x) => ({
+          y, x, state: null
+        }))
+      );
+
+      if (redraw) {
+        ReactDOM.render(<App rows={rows} cols={cols} updateCounter={updateCounter} />, document.getElementById('root'));
+      }
+    }
+
+    function checkWin(y, x, player) {
+      const directions = [
+        [0, 1], [0, -1], // Horizontal
+        [1, 0], [-1, 0], // Vertical
+        [1, 1], [-1, -1], // Diagonal \
+        [1, -1], [-1, 1]  // Diagonal /
+      ];
+      for (let [dy, dx] of directions) {
+        let count = 1;
+        for (let i = 1; i <= 3; i++) {
+          let ny = y + dy * i;
+          let nx = x + dx * i;
+          if (ny >= 0 && ny < rows && nx >= 0 && nx < cols && board[ny][nx].state === player) {
+            count++;
+          } else {
+            break;
+          }
+        }
+        for (let i = 1; i <= 3; i++) {
+          let ny = y - dy * i;
+          let nx = x - dx * i;
+          if (ny >= 0 && ny < rows && nx >= 0 && nx < cols && board[ny][nx].state === player) {
+            count++;
+          } else {
+            break;
+          }
+        }
+        if (count >= 4) return true;
+      }
+      return false;
+    }
+
+    function dropDisc(col, player) {
+      if (gameOver) return false;
+      // Find the lowest empty row in the column
+      for (let y = rows - 1; y >= 0; y--) {
+        if (!board[y][col].state) {
+          board[y][col].state = player;
+          if (player === 'red') {
+            redCount++;
+          } else {
+            yellowCount++;
+          }
+          moveCount++;
+          return { y, x: col };
+        }
+      }
+      return false; // Column is full
+    }
+
+    function placeDisc(col) {
+      if (currentPlayer !== 'red') return;
+      const result = dropDisc(col, 'red');
+      if (!result) {
+        alert("Invalid move: Column is full!");
+        return;
+      }
+      const { y, x } = result;
+      if (checkWin(y, x, 'red')) {
+        endGame('Red Wins!');
+        return;
+      }
+      if (moveCount === rows * cols) {
+        endGame('Draw!');
+        return;
+      }
+      currentPlayer = 'yellow';
+      document.getElementById("status-text").innerHTML = "AI's Turn (Yellow)";
+      document.getElementById("progress-text").innerHTML = `Red: ${redCount} | Yellow: ${yellowCount}`;
+      updateCounter++;
+      ReactDOM.render(<App rows={rows} cols={cols} updateCounter={updateCounter} />, document.getElementById('root'));
+      setTimeout(aiMove, 1000); // AI moves after a 1-second delay
+    }
+
+    function aiMove() {
+      if (gameOver || currentPlayer !== 'yellow') return;
+
+      // Try to win
+      for (let x = 0; x < cols; x++) {
+        const result = dropDisc(x, 'yellow');
+        if (result) {
+          const { y, x: col } = result;
+          if (checkWin(y, col, 'yellow')) {
+            endGame('Yellow Wins!');
+            board[y][col].state = 'yellow';
+            yellowCount++;
+            moveCount++;
+            document.getElementById("status-text").innerHTML = "Yellow Wins!";
+            document.getElementById("progress-text").innerHTML = `Red: ${redCount} | Yellow: ${yellowCount}`;
+            updateCounter++;
+            ReactDOM.render(<App rows={rows} cols={cols} updateCounter={updateCounter} />, document.getElementById('root'));
+            return;
+          }
+          board[y][col].state = null; // Revert simulation
+        }
+      }
+
+      // Try to block
+      for (let x = 0; x < cols; x++) {
+        const result = dropDisc(x, 'red');
+        if (result) {
+          const { y, x: col } = result;
+          if (checkWin(y, col, 'red')) {
+            board[y][col].state = 'yellow';
+            yellowCount++;
+            moveCount++;
+            if (checkWin(y, col, 'yellow')) {
+              endGame('Yellow Wins!');
+            } else if (moveCount === rows * cols) {
+              endGame('Draw!');
+            } else {
+              currentPlayer = 'red';
+              document.getElementById("status-text").innerHTML = "Your Turn (Red)";
+              document.getElementById("progress-text").innerHTML = `Red: ${redCount} | Yellow: ${yellowCount}`;
+              updateCounter++;
+              ReactDOM.render(<App rows={rows} cols={cols} updateCounter={updateCounter} />, document.getElementById('root'));
+            }
+            return;
+          }
+          board[y][col].state = null; // Revert simulation
+        }
+      }
+
+      // Random valid move
+      let validCols = [];
+      for (let x = 0; x < cols; x++) {
+        if (board[0][x].state === null) {
+          validCols.push(x);
+        }
+      }
+      if (validCols.length === 0) {
+        endGame('Draw!');
+        return;
+      }
+      const col = validCols[Math.floor(Math.random() * validCols.length)];
+      const result = dropDisc(col, 'yellow');
+      const { y, x: colX } = result;
+      if (checkWin(y, colX, 'yellow')) {
+        endGame('Yellow Wins!');
+        return;
+      }
+      if (moveCount === rows * cols) {
+        endGame('Draw!');
+        return;
+      }
+      currentPlayer = 'red';
+      document.getElementById("status-text").innerHTML = "Your Turn (Red)";
+      document.getElementById("progress-text").innerHTML = `Red: ${redCount} | Yellow: ${yellowCount}`;
+      updateCounter++;
+      ReactDOM.render(<App rows={rows} cols={cols} updateCounter={updateCounter} />, document.getElementById('root'));
+    }
+
+    function endGame(message) {
+      gameOver = true;
+      document.getElementById("progress").style.width = "100%";
+      document.getElementById("progress-text").innerHTML = `Game Over! Red: ${redCount} | Yellow: ${yellowCount}`;
+      document.getElementById("status-text").innerHTML = message;
+      document.getElementById("overlay").style.display = "block";
+      setTimeout(() => document.getElementById("overlay").style.display = "none", 2000);
+      document.getElementById("root").style.animation = 'shake 0.3s 1';
+      updateCounter++;
+      ReactDOM.render(<App rows={rows} cols={cols} updateCounter={updateCounter} />, document.getElementById('root'));
+    }
+
+    const cellStyleEmpty = {
+      width: '40px',
+      height: '40px',
+      backgroundColor: '#1e90ff', // Blue board
+      margin: '1px',
+      borderRadius: '50%',
+      textAlign: 'center',
+      display: 'inline-table',
+      border: '1px solid #104e8b'
+    };
+
+    const cellStyleRed = {
+      width: '40px',
+      height: '40px',
+      backgroundColor: 'red',
+      margin: '1px',
+      borderRadius: '50%',
+      textAlign: 'center',
+      display: 'inline-table'
+    };
+
+    const cellStyleYellow = {
+      width: '40px',
+      height: '40px',
+      backgroundColor: 'yellow',
+      margin: '1px',
+      borderRadius: '50%',
+      textAlign: 'center',
+      display: 'inline-table',
+      border: '1px solid #333'
+    };
+
+    const textStyle = { fontSize: '20px' };
+    const rStyle = { backgroundColor: '#1e90ff', display: 'inline' };
+    const contStyle = { backgroundColor: '#1e90ff', display: 'inline' };
+
+    class ObjectCell extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { x: props.x, y: props.y };
+        this.handleClick = this.handleClick.bind(this);
+      }
+
+      shouldComponentUpdate(nextProps) {
+        return nextProps.updateCounter !== this.props.updateCounter;
+      }
+
+      handleClick(e) {
+        e.preventDefault();
+        if (e.type === 'click') {
+          placeDisc(this.state.x);
+        }
+      }
+
+      render() {
+        const { x, y } = this.state;
+        const cell = board[y][x];
+        const { state } = cell;
+
+        let style = cellStyleEmpty;
+        if (state === 'red') style = cellStyleRed;
+        else if (state === 'yellow') style = cellStyleYellow;
+
+        return (
+          <div className="cell" style={style} onClick={this.handleClick}>
+            <span style={textStyle}>&nbsp;</span>
+          </div>
+        );
+      }
+    }
+
+    function ObjectRow(props) {
+      const cells = Array.from({ length: props.cols }, (_, j) => (
+        <ObjectCell key={j} y={props.y} x={j} updateCounter={props.updateCounter} />
+      ));
+      return <div>{cells}</div>;
+    }
+
+    class App extends React.Component {
+      render() {
+        const rows = Array.from({ length: this.props.rows }, (_, i) => (
+          <div style={rStyle} key={i}>
+            <ObjectRow y={i} cols={this.props.cols} updateCounter={this.props.updateCounter} />
+          </div>
+        ));
+        return <div style={contStyle}>{rows}</div>;
+      }
+    }
+
+    newGame();
+    ReactDOM.render(<App rows={rows} cols={cols} updateCounter={updateCounter} />, document.getElementById('root'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Checkers Game with React</title>
+  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <style>
+    @keyframes shake {
+      0% { transform: translate(1px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(3px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+      50% { transform: translate(-1px, 2px) rotate(-1deg); }
+      60% { transform: translate(-3px, 1px) rotate(0deg); }
+      70% { transform: translate(3px, 1px) rotate(-1deg); }
+      80% { transform: translate(-1px, -1px) rotate(1deg); }
+      90% { transform: translate(1px, 2px) rotate(0deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+
+    #overlay {
+      position: fixed;
+      display: none;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="panel panel-default">
+    <div id="overlay"><img src="game_over.gif"></div>
+    <div class="panel-body" style="display: inline-block">
+      <form class="form-inline">
+        <fieldset>
+          <legend>
+            <a href="https://en.wikipedia.org/wiki/Draughts">Checkers Game</a> with React
+          </legend>
+          <div id="root"></div>
+          <p></p>
+          <div>
+            <div class="form-group">
+              <button type="button" class="btn btn-primary" onclick="newGame(true)">New Game</button>
+            </div>
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
+              Info&nbsp;<span class="badge badge-light" id="status-text">Your Turn (Red)</span>
+            </button>
+            <div id="myModal" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Checkers Rules</h4>
+                  </div>
+                  <div class="modal-body">
+                    <ul>
+                      <li>Played on an 8x8 checkered board, using only the 32 dark squares.</li>
+                      <li>You play as Red, and the AI plays as Beige, taking turns.</li>
+                      <li>Click a piece, then an empty dark square to move diagonally forward, or jump over an opponent's piece to capture it.</li>
+                      <li>Pieces reaching the opponent's back row become kings (shown with a crown), allowing backward and forward moves.</li>
+                      <li>Goal: Capture all opponent pieces to win the game.</li>
+                      <li>Captured pieces are shown in the progress bar (Red Captured: X | Beige Captured: Y).</li>
+                    </ul>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p></p>
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="width: 0%" id="progress">
+                <span class="badge badge-light" id="progress-text">Red Captured: 0 | Beige Captured: 0</span>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+  <script type="text/babel">
+    let size = 8; // 8x8 board
+    let board = [];
+    let currentPlayer = 'red';
+    let redCaptured = 0;
+    let beigeCaptured = 0;
+    let moveCount = 0;
+    let gameOver = false;
+    let updateCounter = 0; // Global counter to trigger re-renders
+    let selectedPiece = null; // Tracks selected piece for moves
+
+    function isDarkSquare(y, x) {
+      return (y + x) % 2 === 1; // Dark squares have odd sum of coordinates
+    }
+
+    function newGame(redraw) {
+      gameOver = false;
+      currentPlayer = 'red';
+      redCaptured = 0;
+      beigeCaptured = 0;
+      moveCount = 0;
+      selectedPiece = null;
+      updateCounter++;
+      document.getElementById("progress").style.width = "0%";
+      document.getElementById("progress-text").innerHTML = "Red Captured: 0 | Beige Captured: 0";
+      document.getElementById("status-text").innerHTML = "Your Turn (Red)";
+      document.getElementById("root").style.animation = '';
+      document.getElementById("overlay").style.display = "none";
+
+      board = Array(size).fill().map((_, y) =>
+        Array(size).fill().map((_, x) => ({
+          y, x, state: null
+        }))
+      );
+
+      // Place Red pieces in rows 0-2, Beige pieces in rows 5-7 on dark squares
+      for (let y = 0; y < 3; y++) {
+        for (let x = 0; x < size; x++) {
+          if (isDarkSquare(y, x)) {
+            board[y][x].state = 'red';
+          }
+        }
+      }
+      for (let y = 5; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          if (isDarkSquare(y, x)) {
+            board[y][x].state = 'beige';
+          }
+        }
+      }
+
+      if (redraw) {
+        ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+      }
+    }
+
+    function getValidMoves(y, x) {
+      const piece = board[y][x].state;
+      if (!piece) {
+        return { moves: [], captures: [] };
+      }
+      
+      // Fixed logic: Check if piece belongs to current player
+      if ((piece.includes('red') && currentPlayer !== 'red') || 
+          (piece.includes('beige') && currentPlayer !== 'beige')) {
+        return { moves: [], captures: [] };
+      }
+      
+      const isKing = piece.includes('king');
+      const directions = piece.includes('red') ? 
+        (isKing ? [[-1, -1], [-1, 1], [1, -1], [1, 1]] : [[1, -1], [1, 1]]) :
+        (isKing ? [[-1, -1], [-1, 1], [1, -1], [1, 1]] : [[-1, -1], [-1, 1]]);
+      const moves = [];
+      const captures = [];
+
+      // Check simple moves (one square diagonally)
+      for (let [dy, dx] of directions) {
+        let ny = y + dy;
+        let nx = x + dx;
+        if (ny >= 0 && ny < size && nx >= 0 && nx < size && isDarkSquare(ny, nx) && !board[ny][nx].state) {
+          moves.push({ y: ny, x: nx });
+        }
+      }
+
+      // Check capture moves (jump over opponent)
+      for (let [dy, dx] of directions) {
+        let ny = y + dy;
+        let nx = x + dx;
+        let jumpY = y + 2 * dy;
+        let jumpX = x + 2 * dx;
+        if (ny >= 0 && ny < size && nx >= 0 && nx < size && 
+            jumpY >= 0 && jumpY < size && jumpX >= 0 && jumpX < size &&
+            isDarkSquare(jumpY, jumpX) && !board[jumpY][jumpX].state) {
+          const opponent = currentPlayer === 'red' ? 'beige' : 'red';
+          if (board[ny][nx].state && board[ny][nx].state.includes(opponent)) {
+            captures.push({ y: jumpY, x: jumpX, captureY: ny, captureX: nx });
+          }
+        }
+      }
+
+      return { moves, captures };
+    }
+
+    function movePiece(fromY, fromX, toY, toX, captureY, captureX) {
+      const piece = board[fromY][fromX].state;
+      board[toY][toX].state = piece;
+      board[fromY][fromX].state = null;
+      if (captureY !== undefined && captureX !== undefined) {
+        board[captureY][captureX].state = null;
+        if (currentPlayer === 'red') {
+          beigeCaptured++;
+        } else {
+          redCaptured++;
+        }
+      }
+      // Promote to king
+      if (currentPlayer === 'red' && toY === size - 1 && !piece.includes('king')) {
+        board[toY][toX].state = 'red-king';
+      } else if (currentPlayer === 'beige' && toY === 0 && !piece.includes('king')) {
+        board[toY][toX].state = 'beige-king';
+      }
+    }
+
+    // New function to count remaining pieces
+    function countPieces(player) {
+      let count = 0;
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          if (board[y][x].state && board[y][x].state.includes(player)) {
+            count++;
+          }
+        }
+      }
+      return count;
+    }
+
+    // Function to check if game should end (all opponent pieces captured)
+    function checkGameEnd() {
+      const redPieces = countPieces('red');
+      const beigePieces = countPieces('beige');
+      
+      if (redPieces === 0) {
+        endGame('Beige Wins! All Red pieces captured!');
+        return true;
+      } else if (beigePieces === 0) {
+        endGame('Red Wins! All Beige pieces captured!');
+        return true;
+      }
+      return false;
+    }
+
+    function placeMove(y, x) {
+      if (gameOver) return;
+      if (!selectedPiece) {
+        if (board[y][x].state && board[y][x].state.includes('red') && currentPlayer === 'red') {
+          selectedPiece = { y, x };
+          updateCounter++;
+          ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+        }
+        return;
+      }
+
+      const { moves, captures } = getValidMoves(selectedPiece.y, selectedPiece.x);
+      const target = moves.find(m => m.y === y && m.x === x);
+      const capture = captures.find(c => c.y === y && c.x === x);
+
+      if (target || capture) {
+        movePiece(selectedPiece.y, selectedPiece.x, y, x, capture?.captureY, capture?.captureX);
+        selectedPiece = null;
+        moveCount++;
+        
+        // Check if game ends due to all pieces captured
+        if (checkGameEnd()) {
+          return;
+        }
+        
+        currentPlayer = 'beige';
+        document.getElementById("status-text").innerHTML = "AI's Turn (Beige)";
+        document.getElementById("progress-text").innerHTML = `Red Captured: ${redCaptured} | Beige Captured: ${beigeCaptured}`;
+        updateCounter++;
+        ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+        setTimeout(aiMove, 1000); // AI moves after a 1-second delay
+      } else {
+        alert("Invalid move: Choose a valid diagonal move or capture!");
+        selectedPiece = null;
+        updateCounter++;
+        ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+      }
+    }
+
+    function aiMove() {
+      if (gameOver || currentPlayer !== 'beige') return;
+
+      let captures = [];
+      let moves = [];
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          if (board[y][x].state && board[y][x].state.includes('beige')) {
+            const { moves: pieceMoves, captures: pieceCaptures } = getValidMoves(y, x);
+            pieceCaptures.forEach(c => captures.push({ fromY: y, fromX: x, ...c }));
+            pieceMoves.forEach(m => moves.push({ fromY: y, fromX: x, ...m }));
+          }
+        }
+      }
+
+      if (captures.length > 0) {
+        // Prioritize captures
+        const move = captures[Math.floor(Math.random() * captures.length)];
+        movePiece(move.fromY, move.fromX, move.y, move.x, move.captureY, move.captureX);
+      } else if (moves.length > 0) {
+        // Prefer advancing moves (closer to row 0 for Beige)
+        moves.sort((a, b) => a.y - b.y); // Lower y is closer to Beige's goal
+        const move = moves[0];
+        movePiece(move.fromY, move.fromX, move.y, move.x);
+      } else {
+        // This should not happen in normal gameplay since we only end on piece capture
+        endGame('Red Wins! AI has no moves!');
+        return;
+      }
+
+      moveCount++;
+      
+      // Check if game ends due to all pieces captured
+      if (checkGameEnd()) {
+        return;
+      }
+      
+      currentPlayer = 'red';
+      document.getElementById("status-text").innerHTML = "Your Turn (Red)";
+      document.getElementById("progress-text").innerHTML = `Red Captured: ${redCaptured} | Beige Captured: ${beigeCaptured}`;
+      updateCounter++;
+      ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+    }
+
+    function endGame(message) {
+      gameOver = true;
+      document.getElementById("progress").style.width = "100%";
+      document.getElementById("progress-text").innerHTML = `Game Over! Red Captured: ${redCaptured} | Beige Captured: ${beigeCaptured}`;
+      document.getElementById("status-text").innerHTML = message;
+      document.getElementById("overlay").style.display = "block";
+      setTimeout(() => document.getElementById("overlay").style.display = "none", 2000);
+      document.getElementById("root").style.animation = 'shake 0.3s 1';
+      updateCounter++;
+      ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+    }
+
+    const cellStyleLight = {
+      width: '40px',
+      height: '40px',
+      backgroundColor: '#fff',
+      margin: '1px',
+      textAlign: 'center',
+      display: 'inline-block',
+      verticalAlign: 'top',
+      position: 'relative'
+    };
+
+    const cellStyleDark = {
+      width: '40px',
+      height: '40px',
+      backgroundColor: '#555',
+      margin: '1px',
+      borderRadius: '3px',
+      textAlign: 'center',
+      display: 'inline-block',
+      verticalAlign: 'top',
+      position: 'relative'
+    };
+
+    const pieceStyleRed = {
+      width: '34px',
+      height: '34px',
+      backgroundColor: 'rgba(255, 0, 0, 0.7)', // Red with transparency
+      margin: '3px',
+      borderRadius: '50%',
+      border: '2px solid #8b0000',
+      textAlign: 'center',
+      display: 'block',
+      position: 'absolute',
+      top: '0',
+      left: '0'
+    };
+
+    const pieceStyleBeige = {
+      width: '34px',
+      height: '34px',
+      backgroundColor: 'rgba(245, 245, 220, 0.7)', // Beige with transparency
+      margin: '3px',
+      borderRadius: '50%',
+      border: '2px solid #8b7d6b',
+      textAlign: 'center',
+      display: 'block',
+      position: 'absolute',
+      top: '0',
+      left: '0'
+    };
+
+    const pieceStyleRedKing = {
+      width: '34px',
+      height: '34px',
+      backgroundColor: 'rgba(255, 0, 0, 0.7)',
+      margin: '3px',
+      borderRadius: '50%',
+      border: '2px solid #8b0000',
+      textAlign: 'center',
+      display: 'block',
+      position: 'absolute',
+      top: '0',
+      left: '0',
+      lineHeight: '30px'
+    };
+
+    const pieceStyleBeigeKing = {
+      width: '34px',
+      height: '34px',
+      backgroundColor: 'rgba(245, 245, 220, 0.7)',
+      margin: '3px',
+      borderRadius: '50%',
+      border: '2px solid #8b7d6b',
+      textAlign: 'center',
+      display: 'block',
+      position: 'absolute',
+      top: '0',
+      left: '0',
+      lineHeight: '30px'
+    };
+
+    const pieceStyleSelected = {
+      width: '34px',
+      height: '34px',
+      backgroundColor: 'rgba(255, 215, 0, 0.7)', // Gold with transparency
+      margin: '3px',
+      borderRadius: '50%',
+      border: '2px solid #8b6508',
+      textAlign: 'center',
+      display: 'block',
+      position: 'absolute',
+      top: '0',
+      left: '0',
+      lineHeight: '30px'
+    };
+
+    const rStyle = { backgroundColor: '#fff', display: 'inline' };
+    const contStyle = { 
+      backgroundColor: '#fff', 
+      display: 'inline-block',
+      border: '3px solid #000',
+      borderRadius: '5px',
+      padding: '2px'
+    };
+
+    class ObjectCell extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { x: props.x, y: props.y };
+        this.handleClick = this.handleClick.bind(this);
+      }
+
+      shouldComponentUpdate(nextProps) {
+        return nextProps.updateCounter !== this.props.updateCounter;
+      }
+
+      handleClick(e) {
+        e.preventDefault();
+        if (e.type === 'click') {
+          placeMove(this.state.y, this.state.x);
+        }
+      }
+
+      render() {
+        const { x, y } = this.state;
+        const cell = board[y][x];
+        const { state } = cell;
+        const isSelected = selectedPiece && selectedPiece.y === y && selectedPiece.x === x;
+
+        const cellStyle = isDarkSquare(y, x) ? cellStyleDark : cellStyleLight;
+        let pieceStyle = null;
+        let content = '\u00A0'; // Non-breaking space
+        if (state === 'red') {
+          pieceStyle = isSelected ? pieceStyleSelected : pieceStyleRed;
+        } else if (state === 'beige') {
+          pieceStyle = isSelected ? pieceStyleSelected : pieceStyleBeige;
+        } else if (state === 'red-king') {
+          pieceStyle = isSelected ? pieceStyleSelected : pieceStyleRedKing;
+        } else if (state === 'beige-king') {
+          pieceStyle = isSelected ? pieceStyleSelected : pieceStyleBeigeKing;
+        }
+
+        return (
+          <div className="cell" style={cellStyle} onClick={isDarkSquare(y, x) ? this.handleClick : null}>
+            {pieceStyle ? (
+              <div style={pieceStyle}>
+                {(state === 'red-king' || state === 'beige-king') ? (
+                  <span style={{fontSize: '18px', color: '#FFD700', fontWeight: 'bold'}}>♔</span>
+                ) : null}
+              </div>
+            ) : content}
+          </div>
+        );
+      }
+    }
+
+    function ObjectRow(props) {
+      const cells = Array.from({ length: props.size }, (_, j) => (
+        <ObjectCell key={j} y={props.y} x={j} updateCounter={props.updateCounter} />
+      ));
+      return <div>{cells}</div>;
+    }
+
+    class App extends React.Component {
+      render() {
+        const rows = Array.from({ length: this.props.size }, (_, i) => (
+          <div style={rStyle} key={i}>
+            <ObjectRow y={i} size={this.props.size} updateCounter={this.props.updateCounter} />
+          </div>
+        ));
+        return <div style={contStyle}>{rows}</div>;
+      }
+    }
+
+    newGame();
+    ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+  </script>
+</body>
+</html>
