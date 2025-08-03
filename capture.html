@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Capture Game with React</title>
+  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <style>
+    @keyframes shake {
+      0% { transform: translate(1px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(3px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+      50% { transform: translate(-1px, 2px) rotate(-1deg); }
+      60% { transform: translate(-3px, 1px) rotate(0deg); }
+      70% { transform: translate(3px, 1px) rotate(-1deg); }
+      80% { transform: translate(-1px, -1px) rotate(1deg); }
+      90% { transform: translate(1px, 2px) rotate(0deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+
+    #overlay {
+      position: fixed;
+      display: none;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="panel panel-default">
+    <div id="overlay"><img src="game_over.gif"></div>
+    <div class="panel-body" style="display: inline-block">
+      <form class="form-inline">
+        <fieldset>
+          <legend>Capture Game with React</legend>
+          <div id="root"></div>
+          <p></p>
+          <div>
+            <div class="form-group">
+              <button type="button" class="btn btn-primary" onclick="newGame(true)">New Game</button>
+            </div>
+            <div class="form-group">
+              <button type="button" class="btn btn-primary" onclick="passTurn()">Pass</button>
+            </div>
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
+              Info&nbsp;<span class="badge badge-light" id="status-text">Your Turn (Black)</span>
+            </button>
+            <div id="myModal" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Capture Game Rules</h4>
+                  </div>
+                  <div class="modal-body">
+                    <ul>
+                      <li>Played on a 9x9 grid of intersections.</li>
+                      <li>You play as Black, and the AI plays as White, taking turns.</li>
+                      <li>Click an empty intersection to place a stone.</li>
+                      <li>Stones connect horizontally or vertically to form groups.</li>
+                      <li>A group is captured and removed if it has no empty adjacent intersections (liberties).</li>
+                      <li>Click "Pass" to skip your turn; two consecutive passes end the game.</li>
+                      <li>Moves that leave your group without liberties are illegal.</li>
+                      <li>Goal: Capture more of the AI’s stones than it captures of yours.</li>
+                      <li>Captured stones are shown in the progress bar (Black: X | White: Y).</li>
+                    </ul>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p></p>
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%" id="progress">
+                <span class="badge badge-light" id="progress-text">Black: 0 | White: 0</span>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+  <script type="text/babel">
+    let size = 9; // 9x9 board
+    let board = [];
+    let currentPlayer = 'black';
+    let blackCaptures = 0;
+    let whiteCaptures = 0;
+    let passCount = 0;
+    let gameOver = false;
+    let updateCounter = 0; // Global counter to trigger re-renders
+
+    function newGame(redraw) {
+      gameOver = false;
+      currentPlayer = 'black';
+      blackCaptures = 0;
+      whiteCaptures = 0;
+      passCount = 0;
+      updateCounter++;
+      document.getElementById("progress").style.width = "0%";
+      document.getElementById("progress-text").innerHTML = "Black: 0 | White: 0";
+      document.getElementById("status-text").innerHTML = "Your Turn (Black)";
+      document.getElementById("root").style.animation = '';
+      document.getElementById("overlay").style.display = "none";
+
+      board = Array(size).fill().map((_, y) =>
+        Array(size).fill().map((_, x) => ({
+          y, x, stone: null
+        }))
+      );
+
+      if (redraw) {
+        ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+      }
+    }
+
+    function passTurn() {
+      if (gameOver) return;
+      passCount++;
+      if (passCount >= 2) {
+        endGame();
+        return;
+      }
+      currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+      document.getElementById("status-text").innerHTML = currentPlayer === 'black' ? "Your Turn (Black)" : "AI's Turn (White)";
+      updateCounter++;
+      ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+      if (currentPlayer === 'white') {
+        setTimeout(aiMove, 1000); // AI moves after a 1-second delay
+      }
+    }
+
+    function endGame() {
+      gameOver = true;
+      document.getElementById("progress").style.width = "100%";
+      document.getElementById("progress-text").innerHTML = `Game Over! Black: ${blackCaptures} | White: ${whiteCaptures}`;
+      document.getElementById("status-text").innerHTML = "Game Ended";
+      document.getElementById("overlay").style.display = "block";
+      setTimeout(() => document.getElementById("overlay").style.display = "none", 2000);
+      document.getElementById("root").style.animation = 'shake 0.3s 1';
+      updateCounter++;
+      ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+    }
+
+    function placeStone(y, x) {
+      if (gameOver || board[y][x].stone || currentPlayer !== 'black') return;
+      board[y][x].stone = currentPlayer;
+
+      // Check for captures
+      const opponent = 'white';
+      const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+      directions.forEach(([dy, dx]) => {
+        const ny = y + dy;
+        const nx = x + dx;
+        if (ny >= 0 && ny < size && nx >= 0 && nx < size && board[ny][nx].stone === opponent) {
+          captureGroup(ny, nx, opponent);
+        }
+      });
+
+      // Check if the placed stone's group has liberties
+      if (!hasLiberties(y, x, currentPlayer)) {
+        board[y][x].stone = null; // Revert illegal move
+        alert("Illegal move: Stone or group has no liberties!");
+        updateCounter++;
+        ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+        return;
+      }
+
+      passCount = 0;
+      currentPlayer = 'white';
+      document.getElementById("status-text").innerHTML = "AI's Turn (White)";
+      updateCounter++;
+      ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+      setTimeout(aiMove, 1000); // AI moves after a 1-second delay
+    }
+
+    function aiMove() {
+      if (gameOver || currentPlayer !== 'white') return;
+
+      // Strategy: Try to capture opponent's stones by targeting groups with one liberty
+      let move = findCaptureMove('black');
+      if (!move) {
+        // Fallback: Place stone randomly on an empty intersection
+        const emptyCells = [];
+        for (let y = 0; y < size; y++) {
+          for (let x = 0; x < size; x++) {
+            if (!board[y][x].stone) emptyCells.push({ y, x });
+          }
+        }
+        if (emptyCells.length === 0) {
+          passTurn(); // Pass if no valid moves
+          return;
+        }
+        move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+      }
+
+      board[move.y][move.x].stone = 'white';
+
+      // Check for captures
+      const opponent = 'black';
+      const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+      directions.forEach(([dy, dx]) => {
+        const ny = move.y + dy;
+        const nx = move.x + dx;
+        if (ny >= 0 && ny < size && nx >= 0 && nx < size && board[ny][nx].stone === opponent) {
+          captureGroup(ny, nx, opponent);
+        }
+      });
+
+      // Check if AI's move is valid
+      if (!hasLiberties(move.y, move.x, 'white')) {
+        board[move.y][move.x].stone = null; // Revert illegal move
+        passTurn(); // AI passes if no valid move
+        return;
+      }
+
+      passCount = 0;
+      currentPlayer = 'black';
+      document.getElementById("status-text").innerHTML = "Your Turn (Black)";
+      updateCounter++;
+      ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+    }
+
+    function findCaptureMove(opponent) {
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          if (board[y][x].stone === opponent) {
+            const liberties = countLiberties(y, x, opponent);
+            if (liberties.length === 1) {
+              const [libY, libX] = liberties[0];
+              if (!board[libY][libX].stone) {
+                // Simulate move to ensure it's valid
+                board[libY][libX].stone = 'white';
+                if (hasLiberties(libY, libX, 'white')) {
+                  board[libY][libX].stone = null; // Revert simulation
+                  return { y: libY, x: libX };
+                }
+                board[libY][libX].stone = null; // Revert simulation
+              }
+            }
+          }
+        }
+      }
+      return null;
+    }
+
+    function countLiberties(y, x, player) {
+      const visited = new Set();
+      const liberties = [];
+      collectLiberties(y, x, player, visited, liberties);
+      return liberties;
+    }
+
+    function collectLiberties(y, x, player, visited, liberties) {
+      if (y < 0 || y >= size || x < 0 || x >= size || visited.has(`${y},${x}`)) return;
+      if (board[y][x].stone === null) {
+        liberties.push([y, x]);
+        return;
+      }
+      if (board[y][x].stone !== player) return;
+
+      visited.add(`${y},${x}`);
+      const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+      directions.forEach(([dy, dx]) => collectLiberties(y + dy, x + dx, player, visited, liberties));
+    }
+
+    function hasLiberties(y, x, player) {
+      const visited = new Set();
+      return checkLiberties(y, x, player, visited);
+    }
+
+    function checkLiberties(y, x, player, visited) {
+      if (y < 0 || y >= size || x < 0 || x >= size || visited.has(`${y},${x}`)) return false;
+      if (board[y][x].stone === null) return true; // Found a liberty
+      if (board[y][x].stone !== player) return false;
+
+      visited.add(`${y},${x}`);
+      const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+      return directions.some(([dy, dx]) => checkLiberties(y + dy, x + dx, player, visited));
+    }
+
+    function captureGroup(y, x, player) {
+      const visited = new Set();
+      if (!hasLiberties(y, x, player)) {
+        removeGroup(y, x, player, visited);
+      }
+    }
+
+    function removeGroup(y, x, player, visited) {
+      if (y < 0 || y >= size || x < 0 || x >= size || visited.has(`${y},${x}`) || board[y][x].stone !== player) return;
+      visited.add(`${y},${x}`);
+      board[y][x].stone = null;
+      if (player === 'black') whiteCaptures++;
+      else blackCaptures++;
+      document.getElementById("progress-text").innerHTML = `Black: ${blackCaptures} | White: ${whiteCaptures}`;
+
+      const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+      directions.forEach(([dy, dx]) => removeGroup(y + dy, x + dx, player, visited));
+    }
+
+    const cellStyleEmpty = {
+      width: '30px',
+      height: '30px',
+      backgroundColor: '#d2b48c', // Wood-like board color
+      margin: '0.5px',
+      borderRadius: '3px',
+      textAlign: 'center',
+      display: 'inline-table',
+      border: '1px solid #8b5a2b'
+    };
+
+    const cellStyleBlack = {
+      width: '30px',
+      height: '30px',
+      backgroundColor: 'black',
+      margin: '0.5px',
+      borderRadius: '50%',
+      textAlign: 'center',
+      display: 'inline-table'
+    };
+
+    const cellStyleWhite = {
+      width: '30px',
+      height: '30px',
+      backgroundColor: 'white',
+      margin: '0.5px',
+      borderRadius: '50%',
+      textAlign: 'center',
+      display: 'inline-table',
+      border: '1px solid #333'
+    };
+
+    const textStyle = { fontSize: '20px' };
+    const rStyle = { backgroundColor: '#d2b48c', display: 'inline' };
+    const contStyle = { backgroundColor: '#d2b48c', display: 'inline' };
+
+    class ObjectCell extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { x: props.x, y: props.y };
+        this.handleClick = this.handleClick.bind(this);
+      }
+
+      shouldComponentUpdate(nextProps) {
+        return nextProps.updateCounter !== this.props.updateCounter;
+      }
+
+      handleClick(e) {
+        e.preventDefault();
+        if (e.type === 'click') {
+          placeStone(this.state.y, this.state.x);
+        }
+      }
+
+      render() {
+        const { x, y } = this.state;
+        const cell = board[y][x];
+        const { stone } = cell;
+
+        let style = cellStyleEmpty;
+        if (stone === 'black') style = cellStyleBlack;
+        else if (stone === 'white') style = cellStyleWhite;
+
+        return (
+          <div className="cell" style={style} onClick={this.handleClick}>
+            <span style={textStyle}>&nbsp;</span>
+          </div>
+        );
+      }
+    }
+
+    function ObjectRow(props) {
+      const cells = Array.from({ length: props.size }, (_, j) => (
+        <ObjectCell key={j} y={props.y} x={j} updateCounter={props.updateCounter} />
+      ));
+      return <div>{cells}</div>;
+    }
+
+    class App extends React.Component {
+      render() {
+        const rows = Array.from({ length: this.props.size }, (_, i) => (
+          <div style={rStyle} key={i}>
+            <ObjectRow y={i} size={this.props.size} updateCounter={this.props.updateCounter} />
+          </div>
+        ));
+        return <div style={contStyle}>{rows}</div>;
+      }
+    }
+
+    newGame();
+    ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+  </script>
+</body>
+</html>
