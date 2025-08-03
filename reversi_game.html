@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Reversi Game with React</title>
+  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <style>
+    @keyframes shake {
+      0% { transform: translate(1px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(3px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+      50% { transform: translate(-1px, 2px) rotate(-1deg); }
+      60% { transform: translate(-3px, 1px) rotate(0deg); }
+      70% { transform: translate(3px, 1px) rotate(-1deg); }
+      80% { transform: translate(-1px, -1px) rotate(1deg); }
+      90% { transform: translate(1px, 2px) rotate(0deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+
+    #overlay {
+      position: fixed;
+      display: none;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="panel panel-default">
+    <div id="overlay"><img src="game_over.gif"></div>
+    <div class="panel-body" style="display: inline-block">
+      <form class="form-inline">
+        <fieldset>
+          <legend>
+            <a href="https://en.wikipedia.org/wiki/Reversi">Reversi Game</a> with React
+          </legend>
+          <div id="root"></div>
+          <p></p>
+          <div>
+            <div class="form-group">
+              <button type="button" class="btn btn-primary" onclick="newGame(true)">New Game</button>
+            </div>
+            <div class="form-group">
+              <button type="button" class="btn btn-primary" onclick="passTurn()">Pass</button>
+            </div>
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
+              Info&nbsp;<span class="badge badge-light" id="status-text">Your Turn (Black)</span>
+            </button>
+            <div id="myModal" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Reversi Game Rules</h4>
+                  </div>
+                  <div class="modal-body">
+                    <ul>
+                      <li>Played on an 8x8 grid.</li>
+                      <li>You play as Black, and the AI plays as White, taking turns.</li>
+                      <li>Click an empty square to place a disc, flipping opponent discs by sandwiching them between your discs (horizontally, vertically, or diagonally).</li>
+                      <li>Moves must flip at least one opponent disc; otherwise, click "Pass" to skip your turn.</li>
+                      <li>The game ends when neither player can move (board full or no valid moves).</li>
+                      <li>Goal: Have more discs of your color than the AI at the end.</li>
+                      <li>Disc counts are shown in the progress bar (Black: X | White: Y).</li>
+                    </ul>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p></p>
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%" id="progress">
+                <span class="badge badge-light" id="progress-text">Black: 2 | White: 2</span>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+  <script type="text/babel">
+    let size = 8; // 8x8 board
+    let board = [];
+    let currentPlayer = 'black';
+    let blackCount = 2;
+    let whiteCount = 2;
+    let passCount = 0;
+    let gameOver = false;
+    let updateCounter = 0; // Global counter to trigger re-renders
+
+    function newGame(redraw) {
+      gameOver = false;
+      currentPlayer = 'black';
+      blackCount = 2;
+      whiteCount = 2;
+      passCount = 0;
+      updateCounter++;
+      document.getElementById("progress").style.width = "0%";
+      document.getElementById("progress-text").innerHTML = "Black: 2 | White: 2";
+      document.getElementById("status-text").innerHTML = "Your Turn (Black)";
+      document.getElementById("root").style.animation = '';
+      document.getElementById("overlay").style.display = "none";
+
+      board = Array(size).fill().map((_, y) =>
+        Array(size).fill().map((_, x) => ({
+          y, x, state: null
+        }))
+      );
+      // Initial setup: Black at (3,3), (4,4); White at (3,4), (4,3)
+      board[3][3].state = 'black';
+      board[4][4].state = 'black';
+      board[3][4].state = 'white';
+      board[4][3].state = 'white';
+
+      if (redraw) {
+        ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+      }
+    }
+
+    function passTurn() {
+      if (gameOver) return;
+      passCount++;
+      if (passCount >= 2) {
+        endGame();
+        return;
+      }
+      currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+      document.getElementById("status-text").innerHTML = currentPlayer === 'black' ? "Your Turn (Black)" : "AI's Turn (White)";
+      updateCounter++;
+      ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+      if (currentPlayer === 'white') {
+        setTimeout(aiMove, 1000); // AI moves after a 1-second delay
+      }
+    }
+
+    function endGame() {
+      gameOver = true;
+      document.getElementById("progress").style.width = "100%";
+      document.getElementById("progress-text").innerHTML = `Game Over! Black: ${blackCount} | White: ${whiteCount}`;
+      document.getElementById("status-text").innerHTML = blackCount > whiteCount ? "Black Wins!" : blackCount < whiteCount ? "White Wins!" : "Draw!";
+      document.getElementById("overlay").style.display = "block";
+      setTimeout(() => document.getElementById("overlay").style.display = "none", 2000);
+      document.getElementById("root").style.animation = 'shake 0.3s 1';
+      updateCounter++;
+      ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+    }
+
+    function isValidMove(y, x, player) {
+      if (board[y][x].state) return false;
+      const opponent = player === 'black' ? 'white' : 'black';
+      const directions = [
+        [-1, 0], [1, 0], [0, -1], [0, 1], // Horizontal, vertical
+        [-1, -1], [-1, 1], [1, -1], [1, 1]  // Diagonal
+      ];
+      let valid = false;
+      directions.forEach(([dy, dx]) => {
+        let ny = y + dy;
+        let nx = x + dx;
+        let toFlip = [];
+        while (ny >= 0 && ny < size && nx >= 0 && nx < size && board[ny][nx].state === opponent) {
+          toFlip.push([ny, nx]);
+          ny += dy;
+          nx += dx;
+        }
+        if (ny >= 0 && ny < size && nx >= 0 && nx < size && board[ny][nx].state === player && toFlip.length > 0) {
+          valid = true;
+        }
+      });
+      return valid;
+    }
+
+    function placeDisc(y, x, player) {
+      if (gameOver || board[y][x].state || !isValidMove(y, x, player)) {
+        if (player === 'black') {
+          alert("Invalid move: Must flip at least one opponent disc!");
+        }
+        return false;
+      }
+      board[y][x].state = player;
+      const opponent = player === 'black' ? 'white' : 'black';
+      const directions = [
+        [-1, 0], [1, 0], [0, -1], [0, 1],
+        [-1, -1], [-1, 1], [1, -1], [1, 1]
+      ];
+      let flipped = 0;
+      directions.forEach(([dy, dx]) => {
+        let ny = y + dy;
+        let nx = x + dx;
+        let toFlip = [];
+        while (ny >= 0 && ny < size && nx >= 0 && nx < size && board[ny][nx].state === opponent) {
+          toFlip.push([ny, nx]);
+          ny += dy;
+          nx += dx;
+        }
+        if (ny >= 0 && ny < size && nx >= 0 && nx < size && board[ny][nx].state === player) {
+          toFlip.forEach(([fy, fx]) => {
+            board[fy][fx].state = player;
+            flipped++;
+          });
+        }
+      });
+      if (player === 'black') {
+        blackCount += 1 + flipped;
+        whiteCount -= flipped;
+      } else {
+        whiteCount += 1 + flipped;
+        blackCount -= flipped;
+      }
+      return true;
+    }
+
+    function placeStone(y, x) {
+      if (currentPlayer !== 'black') return;
+      if (placeDisc(y, x, 'black')) {
+        passCount = 0;
+        currentPlayer = 'white';
+        document.getElementById("status-text").innerHTML = "AI's Turn (White)";
+        document.getElementById("progress-text").innerHTML = `Black: ${blackCount} | White: ${whiteCount}`;
+        updateCounter++;
+        ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+        setTimeout(aiMove, 1000); // AI moves after a 1-second delay
+      }
+    }
+
+    function aiMove() {
+      if (gameOver || currentPlayer !== 'white') return;
+
+      let validMoves = [];
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          if (isValidMove(y, x, 'white')) {
+            validMoves.push({ y, x, flips: countFlips(y, x, 'white') });
+          }
+        }
+      }
+      if (validMoves.length === 0) {
+        passTurn(); // Pass if no valid moves
+        return;
+      }
+      // Prioritize corners, then max flips, then random
+      const corners = [
+        { y: 0, x: 0 }, { y: 0, x: 7 },
+        { y: 7, x: 0 }, { y: 7, x: 7 }
+      ];
+      let move = corners.find(corner => validMoves.some(m => m.y === corner.y && m.x === corner.x));
+      if (!move) {
+        validMoves.sort((a, b) => b.flips - a.flips);
+        move = validMoves[0]; // Max flips
+      }
+      placeDisc(move.y, move.x, 'white');
+      passCount = 0;
+      currentPlayer = 'black';
+      document.getElementById("status-text").innerHTML = "Your Turn (Black)";
+      document.getElementById("progress-text").innerHTML = `Black: ${blackCount} | White: ${whiteCount}`;
+      updateCounter++;
+      ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+    }
+
+    function countFlips(y, x, player) {
+      if (!isValidMove(y, x, player)) return 0;
+      const opponent = player === 'black' ? 'white' : 'black';
+      const directions = [
+        [-1, 0], [1, 0], [0, -1], [0, 1],
+        [-1, -1], [-1, 1], [1, -1], [1, 1]
+      ];
+      let flips = 0;
+      directions.forEach(([dy, dx]) => {
+        let ny = y + dy;
+        let nx = x + dx;
+        let toFlip = [];
+        while (ny >= 0 && ny < size && nx >= 0 && nx < size && board[ny][nx].state === opponent) {
+          toFlip.push([ny, nx]);
+          ny += dy;
+          nx += dx;
+        }
+        if (ny >= 0 && ny < size && nx >= 0 && nx < size && board[ny][nx].state === player) {
+          flips += toFlip.length;
+        }
+      });
+      return flips;
+    }
+
+    const cellStyleEmpty = {
+      width: '40px',
+      height: '40px',
+      backgroundColor: '#2e8b57', // Green board
+      margin: '1px',
+      borderRadius: '3px',
+      textAlign: 'center',
+      display: 'inline-table',
+      border: '1px solid #1c5c34'
+    };
+
+    const cellStyleBlack = {
+      width: '40px',
+      height: '40px',
+      backgroundColor: 'black',
+      margin: '1px',
+      borderRadius: '50%',
+      textAlign: 'center',
+      display: 'inline-table'
+    };
+
+    const cellStyleWhite = {
+      width: '40px',
+      height: '40px',
+      backgroundColor: 'white',
+      margin: '1px',
+      borderRadius: '50%',
+      textAlign: 'center',
+      display: 'inline-table',
+      border: '1px solid #333'
+    };
+
+    const textStyle = { fontSize: '20px' };
+    const rStyle = { backgroundColor: '#2e8b57', display: 'inline' };
+    const contStyle = { backgroundColor: '#2e8b57', display: 'inline' };
+
+    class ObjectCell extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { x: props.x, y: props.y };
+        this.handleClick = this.handleClick.bind(this);
+      }
+
+      shouldComponentUpdate(nextProps) {
+        return nextProps.updateCounter !== this.props.updateCounter;
+      }
+
+      handleClick(e) {
+        e.preventDefault();
+        if (e.type === 'click') {
+          placeStone(this.state.y, this.state.x);
+        }
+      }
+
+      render() {
+        const { x, y } = this.state;
+        const cell = board[y][x];
+        const { state } = cell;
+
+        let style = cellStyleEmpty;
+        if (state === 'black') style = cellStyleBlack;
+        else if (state === 'white') style = cellStyleWhite;
+
+        return (
+          <div className="cell" style={style} onClick={this.handleClick}>
+            <span style={textStyle}>&nbsp;</span>
+          </div>
+        );
+      }
+    }
+
+    function ObjectRow(props) {
+      const cells = Array.from({ length: props.size }, (_, j) => (
+        <ObjectCell key={j} y={props.y} x={j} updateCounter={props.updateCounter} />
+      ));
+      return <div>{cells}</div>;
+    }
+
+    class App extends React.Component {
+      render() {
+        const rows = Array.from({ length: this.props.size }, (_, i) => (
+          <div style={rStyle} key={i}>
+            <ObjectRow y={i} size={this.props.size} updateCounter={this.props.updateCounter} />
+          </div>
+        ));
+        return <div style={contStyle}>{rows}</div>;
+      }
+    }
+
+    newGame();
+    ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+  </script>
+</body>
+</html>

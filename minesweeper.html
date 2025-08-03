@@ -1,711 +1,440 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-    <title>minesweeper with react</title>
-    <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <title>Minesweeper with React</title>
+  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <style>
+    @keyframes shake {
+      0% { transform: translate(1px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(3px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+      50% { transform: translate(-1px, 2px) rotate(-1deg); }
+      60% { transform: translate(-3px, 1px) rotate(0deg); }
+      70% { transform: translate(3px, 1px) rotate(-1deg); }
+      80% { transform: translate(-1px, -1px) rotate(1deg); }
+      90% { transform: translate(1px, 2px) rotate(0deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
 
-    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-    <!-- Don't use this in production: -->
-
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    
-
-
-    <!-- Font Awesome CSS -->
-     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-
-
-     <style>
-        
-        @keyframes shake {
-          0% { transform: translate(1px, 1px) rotate(0deg); }
-          10% { transform: translate(-1px, -2px) rotate(-1deg); }
-          20% { transform: translate(-3px, 0px) rotate(1deg); }
-          30% { transform: translate(3px, 2px) rotate(0deg); }
-          40% { transform: translate(1px, -1px) rotate(1deg); }
-          50% { transform: translate(-1px, 2px) rotate(-1deg); }
-          60% { transform: translate(-3px, 1px) rotate(0deg); }
-          70% { transform: translate(3px, 1px) rotate(-1deg); }
-          80% { transform: translate(-1px, -1px) rotate(1deg); }
-          90% { transform: translate(1px, 2px) rotate(0deg); }
-          100% { transform: translate(1px, -2px) rotate(-1deg); }
-        }
-
-
-        #overlay {
-        position: fixed;
-        display: none;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;        
-        z-index: 2;
-        cursor: pointer;
-        }
-
-        </style>
-
-
+    #overlay {
+      position: fixed;
+      display: none;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      cursor: pointer;
+    }
+  </style>
 </head>
-
 <body>
-
-
-
-    
-
-    <div class="panel panel-default" >
-
-        <div id="overlay" > <img src=boom.gif></div>
-
-        <div class="panel-body" style="display: inline-block">
-
-            <form class="form-inline">
-
-                <fieldset>
-                    <legend><a href=https://en.wikipedia.org/wiki/Minesweeper_(video_game)>Minesweeper </a> with React </legend> 
-
-                    <div id="root"></div>
-                
-            
-        <P/>            
-        <div>
-
+  <div class="panel panel-default">
+    <div id="overlay"><img src="boom.gif"></div>
+    <div class="panel-body" style="display: inline-block">
+      <form class="form-inline">
+        <fieldset>
+          <legend>
+            <a href="https://en.wikipedia.org/wiki/Minesweeper_(video_game)">Minesweeper</a> with React
+          </legend>
+          <div id="root"></div>
+          <p></p>
+          <div>
             <div class="form-group">
-
-                <button type="button" class="btn btn-primary" onclick="randomMap(true)">New Game</button>
+              <button type="button" class="btn btn-primary" onclick="randomMap(true)">New Game</button>
             </div>
-
             <div class="form-group">
-                <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle"  type="button" data-toggle="dropdown" id=gameLevel>Easy&nbsp;<span class="caret"></span></button>
+              <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" id="gameLevel">
+                  Easy&nbsp;<span class="caret"></span>
+                </button>
                 <ul class="dropdown-menu">
-                    <li onclick="setGameLevel('Easy');"><a href="#">Easy</a></li>
-                    <li onclick="setGameLevel('Medium');"><a href="#">Medium</a></li>
-                    <li onclick="setGameLevel('Hard');"><a href="#">Hard</a></li>
+                  <li onclick="setGameLevel('Easy')"><a href="#">Easy</a></li>
+                  <li onclick="setGameLevel('Medium')"><a href="#">Medium</a></li>
+                  <li onclick="setGameLevel('Hard')"><a href="#">Hard</a></li>
                 </ul>
-                </div>
+              </div>
             </div>
-
-
-
-
-
-            <!-- Trigger the modal with a button -->
-            <button type="button" class="btn btn-info " data-toggle="modal" data-target="#myModal">Info&nbsp;
-                <span class="badge badge-light" id="timer-text">00:00</span>
-
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
+              Info&nbsp;<span class="badge badge-light" id="timer-text">00:00</span>
             </button>
-
-            <!-- Modal -->
             <div id="myModal" class="modal fade" role="dialog">
-                <div class="modal-dialog">
-
-                    <!-- Modal content-->
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Notes to myself</h4>
-                        </div>
-                        <div class="modal-body">
-                            <p>
-                                <ul>
-                                    <li><b>Why?</b>: had some spare time to get up to speed with React and Bootstrap ...</li>
-                                    <li>React <a href="https://reactjs.org/docs/hello-world.html">Tutorial</a></li>
-                                    <li>Decorations are done using <a href=https://www.w3schools.com/bootstrap> Bootstrap library </a> </li>                                     
-                                    <li>Coded <a href=https://en.wikipedia.org/wiki/Minesweeper_(video_game)>Minesweeper </a> game</li> 
-                                    <li><a href=https://reactjs.org/docs/introducing-jsx.html>JSX </a> stands for JavaScript XML.</li> 
-                                    <li>You can put any valid JavaScript expression inside the curly braces in JSX</li>
-                                    <li>Since JSX is closer to JavaScript than to HTML, React DOM uses camelCase property naming convention instead of HTML attribute names.</li>
-                                    <li>JSX Prevents Injection Attacks - By default, React DOM escapes any values embedded in JSX before rendering them. </li>
-                                    <li>JSX Represents Objects.Babel <a href=https://en.wikipedia.org/wiki/Source-to-source_compiler>transpiler </a> compiles JSX down to <code>React.createElement()</code> calls</li> 
-
-                                    <li>An element describes what you want to see on the screen. React elements are immutable. Once you create an element, you can’t change its children or attributes</li>
-                                    <li>React Only Updates What’s Necessary ..React DOM compares the element and its children to the previous one, and only applies the DOM updates necessary to bring the DOM to the desired state.</li>
-                                    <li>Conceptually, components are like JavaScript functions. They accept arbitrary inputs (called “props”) and return React elements describing what should appear on the screen. You create component by creating a function OR class derived from <code>React.Component</code> (see <a href=https://reactjs.org/docs/components-and-props.html>here</a>)</li>
-                                    <li> If you need component to render itself asynchronously you make component as a class derived form <code>React.Component</code> and implment <code>render()</code> function.  </li>
-                                    <li>State:  components can have state. State is added by defining constructor for component 
-                                        and saving nessesary props in state. State is monitored by ReactDOM and if changed (you can change state by calling <code>setState()</code> ) React will call  components render() function     </li>
-                                    <li>Lifecycle: When component becomes visibale <code>componentDidMount()</code> called . When component goes away its <code>componentWillUnmount()</code> is being called . If you need to redraw component asynchronously use <code>setInterval()</code> to set components state from componentDidMount()</li>
-
-
-                                    <li>JS code is <i>single-threaded</i> You can only "ask" browser to execute your code aynchronously at some later time with <code>setInterval()</code></i> </li>
-                                
-                                </ul>
-                            </p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Notes to myself</h4>
+                  </div>
+                  <div class="modal-body">
+                    <ul>
+                      <li><b>Why?</b>: had some spare time to get up to speed with React and Bootstrap</li>
+                      <li>React <a href="https://reactjs.org/docs/hello-world.html">Tutorial</a></li>
+                      <li>Decorations are done using <a href="https://www.w3schools.com/bootstrap">Bootstrap library</a></li>
+                      <li>Coded <a href="https://en.wikipedia.org/wiki/Minesweeper_(video_game)">Minesweeper</a> game</li>
+                      <li><a href="https://reactjs.org/docs/introducing-jsx.html">JSX</a> stands for JavaScript XML</li>
+                      <li>You can put any valid JavaScript expression inside the curly braces in JSX</li>
+                      <li>Since JSX is closer to JavaScript than to HTML, React DOM uses camelCase property naming convention</li>
+                      <li>JSX Prevents Injection Attacks - React DOM escapes values embedded in JSX before rendering</li>
+                      <li>JSX Represents Objects. Babel <a href="https://en.wikipedia.org/wiki/Source-to-source_compiler">transpiler</a> compiles JSX to <code>React.createElement()</code> calls</li>
+                      <li>An element describes what you want to see on the screen. React elements are immutable</li>
+                      <li>React Only Updates What’s Necessary. React DOM compares elements and applies minimal DOM updates</li>
+                      <li>Components are like JavaScript functions, accepting props and returning React elements</li>
+                      <li>Asynchronous rendering requires a class derived from <code>React.Component</code> with <code>render()</code></li>
+                      <li>State is added via constructor, monitored by ReactDOM, and updated with <code>setState()</code></li>
+                      <li>Lifecycle: <code>componentDidMount()</code> called when component is visible, <code>componentWillUnmount()</code> when removed</li>
+                      <li>JS code is single-threaded; use <code>setInterval()</code> for asynchronous execution</li>
+                    </ul>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
                 </div>
+              </div>
             </div>
-
-            <P>
-
-
-
-
-                <!-- Blue -->
-                <div class="progress" >
-                    <div class="progress-bar" role="progressbar" aria-valuenow="0"
-                    aria-valuemin="0" aria-valuemax="100" style="width:70%" id="progress"><span class="badge badge-light" id="progress-text">0%</span></div>
-                </div>
-
-
-        </div>
-
+            <p></p>
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%" id="progress">
+                <span class="badge badge-light" id="progress-text">0%</span>
+              </div>
+            </div>
+          </div>
         </fieldset>
-        </form>
-
+      </form>
     </div>
-    </div>
+  </div>
 
+  <script type="text/babel">
+    let size_x = 0;
+    let size_y = 0;
+    let myMap = [];
+    let bTotalNum = 0;
+    let visitedCells = 0;
+    let timerID = 0;
+    let startTime = 0;
+    let blasted = false;
+    const colors = [
+      'rgb(0, 0, 255)',       // 1 bomb: Blue
+      'rgb(0, 128, 255)',     // 2 bombs: Light Blue
+      'rgb(0, 255, 255)',     // 3 bombs: Cyan
+      'rgb(0, 255, 128)',     // 4 bombs: Teal
+      'rgb(0, 255, 0)',       // 5 bombs: Green
+      'rgb(128, 255, 0)',     // 6 bombs: Lime
+      'rgb(255, 128, 0)',     // 7 bombs: Orange
+      'rgb(255, 0, 0)'        // 8 bombs: Red
+    ];
 
-    <script type="text/babel">
+    function setGameLevel(level) {
+      document.getElementById('gameLevel').innerHTML = level + ' Level&nbsp;<span class="caret"></span>';
+      switch (level) {
+        case "Easy":
+          size_x = 10;
+          size_y = 10;
+          bTotalNum = Math.floor(size_x * size_y / 5);
+          break;
+        case "Medium":
+          size_x = 15;
+          size_y = 15;
+          bTotalNum = Math.floor(size_x * size_y / 5);
+          break;
+        case "Hard":
+          size_x = 20;
+          size_y = 20;
+          bTotalNum = Math.floor(size_x * size_y / 5);
+          break;
+        default:
+          alert("setGameLevel: invalid arg: " + level);
+      }
+    }
 
+    function updateTimer() {
+      const elapsed = Date.now() - startTime.getTime();
+      const totalSeconds = Math.floor(elapsed / 1000);
+      const s = totalSeconds % 60;
+      const m = Math.floor((totalSeconds - s) / 60 % 60);
+      const h = Math.floor((totalSeconds - s) / 3600);
+      const fmt = new Intl.NumberFormat('en-IN', { style: 'decimal', minimumIntegerDigits: 2 });
+      const tText = h ? `${fmt.format(h)}:${fmt.format(m)}:${fmt.format(s)}` : `${fmt.format(m)}:${fmt.format(s)}`;
+      document.getElementById("timer-text").innerHTML = tText;
+    }
 
-        var size_x = 0;
-        var size_y = 0;
+    function randomMap(redraw) {
+      blasted = false;
+      startTime = new Date();
+      clearInterval(timerID);
+      timerID = setInterval(updateTimer, 1000);
+      visitedCells = 0;
+      document.getElementById("progress").style.width = "0%";
+      document.getElementById("progress-text").innerHTML = "0%";
+      document.getElementById("root").style.animation = '';
+      document.getElementById("overlay").style.display = "none";
 
-        var x = 0;
-        var y = 0;
-        var myMap;
-        var bTotalNum = Math.floor(size_x *size_y/5);
-        var visitedCells = 0;
+      myMap = Array(size_y).fill().map((_, y) =>
+        Array(size_x).fill().map((_, x) => ({
+          y, x, visited: false, redraw: false, val: 0, bNum: 0, blasted: false, flag: false
+        }))
+      );
 
-        var timerID =0;
-        var startTime =0;
-        var endTime = 0;
-        var blasted = false;
-
-
-        var colors = ["Blue", "rgb(216, 60, 47)", "rgb(88, 95, 155)", "rgb(112, 255, 0)", "rgb(106, 90, 205)", "rgb(216, 0, 170)"];
-
-        setGameLevel("Easy");
-
-
-        function setGameLevel(level){
-            document.getElementById('gameLevel').innerHTML=level + ' Level&nbsp;<span class="caret">';
-
-            switch (level){
-                case "Easy":
-                    size_y=10;
-                    size_x =10;
-                    bTotalNum  = Math.floor(size_x *size_y/5);
-                    break;
-
-                case "Medium":
-                    size_y=15;
-                    size_x =15;
-                    bTotalNum  = Math.floor(size_x *size_y/5);
-
-                    break;
-                
-                case "Hard":
-                    size_y=20;
-                    size_x =20;
-                    bTotalNum  = Math.floor(size_x *size_y/5);
-
-                    break;
-
-
-                default: 
-                    alert("setGameLevel: invalid arg:" + level);
-            }            
-                
+      for (let i = 0; i < bTotalNum; i++) {
+        const x = Math.floor(Math.random() * size_x);
+        const y = Math.floor(Math.random() * size_y);
+        if (myMap[y][x].val) {
+          i--;
+          continue;
         }
+        myMap[y][x].val = 1;
+        setBmNum(y - 1, x - 1);
+        setBmNum(y - 1, x);
+        setBmNum(y - 1, x + 1);
+        setBmNum(y, x - 1);
+        setBmNum(y, x + 1);
+        setBmNum(y + 1, x - 1);
+        setBmNum(y + 1, x);
+        setBmNum(y + 1, x + 1);
+      }
 
-        
+      if (redraw) {
+        ReactDOM.render(<App x={size_x} y={size_y} />, document.getElementById('root'));
+      }
+    }
 
-        function updateTimer(){
-            // /var now = new Date();
-            
-            var elapsed =   Date.now() - startTime.getTime();
-            
-            let totalSeconds = Math.floor( elapsed/1000) ;
-            let s = totalSeconds % 60;
-            let m = Math.floor(( (totalSeconds - s)/ 60) % 60);
-            let h = Math.floor ((totalSeconds - s ) /3600);
+    function setBmNum(y, x) {
+      if (y < 0 || y >= size_y || x < 0 || x >= size_x || myMap[y][x].val) return;
+      myMap[y][x].bNum += 1;
+    }
 
-
-            const fmt = new Intl.NumberFormat('en-IN', { style: 'decimal', minimumIntegerDigits: 2  });
-            var tText = h? fmt.format(h) + ":" + fmt.format(m) + ":" + fmt.format(s) : fmt.format(m) + ":" + fmt.format(s);
-
-
-            document.getElementById("timer-text").innerHTML = tText;
+    function clearMap(redraw) {
+      for (let y = 0; y < size_y; y++) {
+        for (let x = 0; x < size_x; x++) {
+          myMap[y][x] = { y, x, visited: false, redraw: true, val: myMap[y][x].val, bNum: 0, blasted: false, flag: false };
         }
+      }
+      if (redraw) {
+        ReactDOM.render(<App x={size_x} y={size_y} />, document.getElementById('root'));
+      }
+    }
 
+    function endOfGame(result) {
+      clearInterval(timerID);
+      document.getElementById("progress").style.width = "100%";
+      document.getElementById("progress-text").innerHTML = result ? " Congrats! You won the game!!!" : " Oops! Try again.. Press New Game..";
+      if (!result) {
+        document.getElementById("overlay").style.display = "block";
+        setTimeout(() => document.getElementById("overlay").style.display = "none", 2000);
+        document.getElementById("root").style.animation = 'shake 0.3s 1';
+      }
+    }
 
-        //generates new map - 2d array with structures definining land piece 
-        // redraw argument - if set to truewill call ReactDOM.render  
-
-        function randomMap(redraw) {
-            blasted = false;
-            startTime = new Date();
-
-            //stop previous timer if user clicks New game before game end ...
-            clearInterval(timerID);            
-            timerID = setInterval( updateTimer,1000);
-
-            console.info("randomMap--> timerID: "+ timerID);
-
-
-            visitedCells = 0;
-            document.getElementById("progress").style.width = 0 +"%";
-            document.getElementById("progress-text").innerHTML = 0 +"%";
-
-            document.getElementById("root").style.animation = '';
-            document.getElementById("overlay").style.display = "none";
-
-
-
-
-            myMap = new Array(size_y);
-
-            for (y = 0; y < size_y; y++) {
-                myMap[y] = new Array(size_x);
-                for (x = 0; x < size_x; x++) {
-                    var val = 0;//Math.floor(Math.random() * 2);
-                    myMap[y][x] = { y: y, x: x, visited: false, redraw: false, val: val, bNum: val , blasted: false, flag:false };
-                    //console.info("x:" +x + " y:" +y + " val :"+val);
-                }
-            }
-
-            for (var i=0; i < bTotalNum; i++){
-                x= Math.floor(Math.random() * size_x);
-                y= Math.floor(Math.random() * size_y);
-
-                if (myMap[y][x].val){
-                    i--;
-                    continue;
-                }
-
-                //set a bomb
-                myMap[y][x].val = 1;
-                //console.info("x:" +x + " y:" +y + " val :"+val);
-
-            //mark  adjacent spaces      
-            // y-1,x-1   y-1, x   y-1,x+1
-            //  y,x-1    [y,x]    y,x+1
-            // y+1,x-1   y+1,x    y+1,x+1   
-
-            setBmNum(y - 1, x - 1);
-            setBmNum(y - 1, x);
-            setBmNum(y - 1, x + 1);
-            setBmNum(y, x - 1);
-            setBmNum(y, x + 1);
-            setBmNum(y + 1, x - 1);
-            setBmNum(y + 1, x);
-            setBmNum(y + 1, x + 1);
-
-
-            }
-
-            if (redraw) {
-                ReactDOM.render(
-                    <App x={size_x} y={size_y} />,
-                    document.getElementById('root')
-                );
-
-            }
+    function showMap() {
+      for (let y = 0; y < size_y; y++) {
+        for (let x = 0; x < size_x; x++) {
+          myMap[y][x].visited = true;
+          myMap[y][x].redraw = true;
         }
+      }
+    }
 
-        function setBmNum(y,x){
+    function flagLand(y, x) {
+      myMap[y][x].flag = !myMap[y][x].flag;
+      myMap[y][x].redraw = true;
+    }
 
-            //check boundaies 
-            if (y < 0 || y >= size_y || x < 0 || x >= size_x)
-                return;
+    function updateProgress() {
+      const curProgress = Math.floor(visitedCells / ((size_x * size_y - bTotalNum) / 100));
+      document.getElementById("progress").style.width = curProgress + "%";
+      document.getElementById("progress-text").innerHTML = curProgress + "%";
+      if (size_x * size_y - bTotalNum === visitedCells) {
+        showMap();
+        endOfGame(true);
+      }
+    }
 
-            //it is a bomb
-            if (myMap[y][x].val)
-                return;
+    function exploreLand(y, x) {
+      if (y < 0 || y >= size_y || x < 0 || x >= size_x || myMap[y][x].visited) return;
+      myMap[y][x].visited = true;
+      visitedCells++;
+      myMap[y][x].redraw = true;
 
-            myMap[y][x].bNum +=1;             
+      if (myMap[y][x].val) {
+        myMap[y][x].blasted = true;
+        blasted = true;
+        showMap();
+        endOfGame(false);
+        return;
+      }
+
+      updateProgress();
+      if (myMap[y][x].bNum !== 0) return;
+
+      exploreLand(y - 1, x - 1);
+      exploreLand(y - 1, x);
+      exploreLand(y - 1, x + 1);
+      exploreLand(y, x - 1);
+      exploreLand(y, x + 1);
+      exploreLand(y + 1, x - 1);
+      exploreLand(y + 1, x);
+      exploreLand(y + 1, x + 1);
+    }
+
+    const cellStyle1 = {
+      color: '#ff4500',
+      width: '30px',
+      height: '30px',
+      backgroundColor: '#b8b8ba',
+      margin: '0.5px',
+      borderRadius: '3px',
+      textAlign: 'center',
+      display: 'inline-table'
+    };
+
+    const cellStyle0 = {
+      color: 'blue',
+      width: '30px',
+      height: '30px',
+      backgroundColor: '#939495',
+      margin: '0.5px',
+      borderRadius: '3px',
+      textAlign: 'center',
+      display: 'inline-table'
+    };
+
+    const cellBlasted = {
+      color: 'black',
+      width: '30px',
+      height: '30px',
+      backgroundColor: 'red',
+      margin: '0.5px',
+      borderRadius: '3px',
+      textAlign: 'center',
+      display: 'inline-table'
+    };
+
+    const cellBomb = {
+      color: 'black',
+      width: '30px',
+      height: '30px',
+      backgroundColor: '#939495',
+      margin: '0.5px',
+      borderRadius: '3px',
+      textAlign: 'center',
+      display: 'inline-table'
+    };
+
+    const cellStyles = [cellStyle0, cellStyle1];
+
+    function cellTextStyle(num) {
+      return { fontSize: '20px', color: colors[num - 1] || 'black' };
+    }
+
+    const textStyle = { fontSize: '20px' };
+    const bombStyle = { fontSize: '25px' };
+    const rStyle = { color: 'blue', backgroundColor: 'black', display: 'inline' };
+    const contStyle = { backgroundColor: 'white', display: 'inline' };
+
+    class ObjectCell extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { x: props.x, y: props.y };
+        this.handleClick = this.handleClick.bind(this);
+      }
+
+      handleClick(e) {
+        e.preventDefault();
+        if (e.type === 'click') {
+          exploreLand(this.state.y, this.state.x);
+        } else if (e.type === 'contextmenu') {
+          flagLand(this.state.y, this.state.x);
         }
+      }
 
-        // clears Map - resets visited value for each piece land 
-        //if redraw argument set , calls  ReactDOM.render
-        function clearMap(redraw) {
+      componentDidMount() {
+        this.timerID = setInterval(() => this.tick(), 100);
+      }
 
-            islandsNum = 0;
-            //console.info("clearMap--->");
+      componentWillUnmount() {
+        clearInterval(this.timerID);
+      }
 
-            for (y = 0; y < size_y; y++) {
-                for (x = 0; x < size_x; x++) {
-                    myMap[y][x] = { y: y, x: x, visited: false, redraw: true, val: myMap[y][x].val, bNum: 0 , blasted: false, flag:false};
-                }
-            }
-
-            if (redraw) {
-                ReactDOM.render(
-                    <App x={size_x} y={size_y} />,
-                    document.getElementById('root')
-                );
-            }
+      tick() {
+        if (myMap[this.state.y][this.state.x].redraw) {
+          this.setState({ changed: true });
         }
+      }
 
+      render() {
+        const { x, y } = this.state;
+        const cell = myMap[y][x];
+        cell.redraw = false;
+        const { visited, bNum, blasted, val, flag } = cell;
+        let style = visited ? cellStyle0 : cellStyle1;
 
-
-        function endOfGame(result){
-            clearInterval(timerID);
-            console.info("==>endOfGame : timerID:" + timerID);
-
-            document.getElementById("progress").style.width = 100 +"%";
-
-
-            if (result)
-                document.getElementById("progress-text").innerHTML = " Congrats! You won the game!!!";
-            else{
-                document.getElementById("overlay").style.display = "block";
-                setTimeout(function(){ document.getElementById("overlay").style.display = "none"; }, 2000);
-
-                document.getElementById("root").style.animation = 'shake 0.3s 1';
-                document.getElementById("progress-text").innerHTML = " Oops! Try again.. Press New Game..";
-
-            }
-            //document.getElementById("progress").className = "progress-bar progress-bar-success";
-          
+        if (blasted) {
+          return (
+            <div className="cell" style={cellBlasted} onClick={this.handleClick}>
+              <span className="fa fa-bomb" style={bombStyle}></span>
+            </div>
+          );
         }
-
-        function showMap(){
-            console.info("==>showMap");
-
-            for(var y=0 ; y < size_y; y++)
-                for(var x=0 ; x < size_x; x++){
-                    myMap[y][x].visited = true;
-                    myMap[y][x].redraw = true;
-                }
-
-
+        if (visited && val) {
+          return (
+            <div className="cell" style={cellBomb} onClick={this.handleClick}>
+              <span className="fa fa-bomb" style={bombStyle}></span>
+            </div>
+          );
         }
-
-        function flagLand(y, x) {
-            console.info("==>flagLand:" +y +"," +x) ;
-
-            myMap[y][x].flag = !myMap[y][x].flag;
-            myMap[y][x].redraw = true;
+        if (visited && bNum) {
+          return (
+            <div className="cell" style={style} onClick={this.handleClick}>
+              <font style={cellTextStyle(bNum)}>{bNum}</font>
+            </div>
+          );
         }
-
-
-        function updateProgress(){
-
-            console.info("==>updateProgress: visitedCells:" +visitedCells) ;
-
-            var curProgress = Math.floor (visitedCells / ((size_x*size_y - bTotalNum)/100) );
-
-            console.info("==>updateProgress: progress:" +curProgress) ;
-
-
-            document.getElementById("progress").style.width = curProgress +"%";
-            document.getElementById("progress-text").innerHTML = curProgress +"%";
-
-            //if we have all Cells uncivered besides bombs we 
-            // reached  an end of game --> show  stats /high score 
-            if (size_x * size_y - bTotalNum == visitedCells){
-                showMap();
-                endOfGame(true);
-                return;
-            }
-
-
-
+        if (!visited && flag) {
+          return (
+            <div className="cell" style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}>
+              <span className="fa fa-flag" style={bombStyle}></span>
+            </div>
+          );
         }
-
-        function exploreLand(y, x) {
-
-
-            //check boundaies 
-            if (y < 0 || y >= size_y || x < 0 || x >= size_x)
-                return;
-
-
-            /*
-            console.info("==>exploreLand:" 
-                + " visited:" + myMap[y][x].visited 
-                + " val:" + myMap[y][x].val
-                );
-            */
-
-            //did we visit this place before?
-            if (myMap[y][x].visited)
-                return;
-
-            //mark place as visited 
-            myMap[y][x].visited = true;
-            visitedCells++;
-            //console.info("before wait");
-
-            myMap[y][x].redraw = true;
-
-            /*
-            setTimeout(() =>
-                (myMap[y][x].redraw = true),
-                100);
-            */
-
-            //console.info("after wait");
-
-
-
-            //ahh user clicked on a bomb:
-            // show blast  & revealing map 
-            if (myMap[y][x].val ){
-                myMap[y][x].blasted = true;
-                blasted = true;
-                showMap();
-                endOfGame(false);
-                return;
-            }
-
-            //update game progress with each uncovered cell
-            updateProgress();
-
-            //if user clicked on cell wich has bombs next to it 
-            //then we just open that cell 
-            if ( myMap[y][x].bNum !=0)
-                return;
-
-            //if user clicks on cell with 0 neighboring bombs
-            //then we open up all surrounding cells with 0 bombs around them   
-
-            //now explore adjacent pieces     
-            // y-1,x-1   y-1, x   y-1,x+1
-            //  y,x-1    [y,x]    y,x+1
-            // y+1,x-1   y+1,x    y+1,x+1   
-
-            exploreLand(y - 1, x - 1);
-            exploreLand(y - 1, x);
-            exploreLand(y - 1, x + 1);
-            exploreLand(y, x - 1);
-            exploreLand(y, x + 1);
-            exploreLand(y + 1, x - 1);
-            exploreLand(y + 1, x);
-            exploreLand(y + 1, x + 1);
-        }
-
-
-
-        //style for cell containing land  
-        const cellStyle1 = {
-            color: '#ff4500',
-            width: '30px',
-            height: '30px',
-            backgroundColor: '#b8b8ba',
-            //backgroundImage: 'url(flag.png)',
-            margin: '0.5px',
-            borderRadius: '3px',
-            textAlign: 'center',
-            display: 'inline-table',
-        };
-
-        //style for cell containing water   
-        const cellStyle0 = {
-            color: 'blue',
-            width: '30px',
-            height: '30px',
-            backgroundColor: '#939495',
-            margin: '0.5px',
-            borderRadius: '3px',
-            textAlign: 'center',
-            display: 'inline-table',
-        };
-
-
-        //style for cell containing water   
-        const cellBlasted = {
-            color: 'black',
-            width: '30px',
-            height: '30px',
-            backgroundColor: 'red',
-            margin: '0.5px',
-            borderRadius: '3px',
-            textAlign: 'center',
-            display: 'inline-table',
-//            animation: 'shake 0.5s',
-//            animationIterationCount: '1',
-        };
-
-        const cellBomb = {
-            color: 'black',
-            width: '30px',
-            height: '30px',
-            backgroundColor: '#939495',
-            margin: '0.5px',
-            borderRadius: '3px',
-            textAlign: 'center',
-            display: 'inline-table',
-        };
-
-
-        var cellStyles = [cellStyle0, cellStyle1];
-
-        function cellTextStyle(num) {
-            return { fontSize: '20px', color: colors[num % 6] }
-        }
-
-        const textStyle = {
-            fontSize: '20px',
-            // fontWeight: 'bold'
-            //            margin: '5px',
-        };
-
-        const bombStyle = {
-            fontSize: '25px',
-        };
-
-
-
-        //component representing matrix/map cell 
-        class ObjectCell extends React.Component {
-            constructor(props) {
-                super(props);
-                this.state = { x: props.x, y: props.y, };
-
-                // This binding is necessary to make `this` work in the callback
-                this.handleClick = this.handleClick.bind(this);                
-            }
-
-            handleClick(e){
-                //console.info("-->handleClick:" + this.state.y +"," + this.state.x);
-                //console.log(event.type);
-
-                //we don't want browsers context menu to be displayed
-                e.preventDefault();
-
-
-                if (e.type === 'click') {
-                    //console.log('Left click');
-                    exploreLand(this.state.y, this.state.x);
-                } else if (e.type === 'contextmenu') {
-                    //console.log('Right click');
-                    flagLand(this.state.y, this.state.x);
-                }
-            }
-
-
-            componentDidMount() {
-                //console.info("mounted-->" + this.state.y + "," + this.state.x);
-                this.timerID = setInterval(
-                    () => this.tick(),
-                    100
-                );
-            }
-
-            componentWillUnmount() {
-                //console.info("unMounted-->" + this.state.y + "," + this.state.x);
-                clearInterval(this.timerID);
-            }
-
-            tick() {
-                //redraw cell if state was changed 
-                if (myMap[this.state.y][this.state.x].redraw) {
-                    //console.info("tick/setState-->" + this.state.y + "," + this.state.x);
-
-                    this.setState({
-                        changed: true
-                    });
-                }
-            }
-
-            //draw map cell 
-            render() {
-                let val = myMap[this.state.y][this.state.x].val;
-
-                myMap[this.state.y][this.state.x].redraw = false;
-
-                var is_visited = myMap[this.state.y][this.state.x].visited;
-                var bNum = myMap[this.state.y][this.state.x].bNum;
-                var is_blasted = myMap[this.state.y][this.state.x].blasted;
-                var is_bomb = myMap[this.state.y][this.state.x].val? true :false;
-
-                let is_flag_set = myMap[this.state.y][this.state.x].flag ? true : false;
-
-                let style = is_visited ? cellStyle0 : cellStyle1;
-
-
-                //if (val)
-                //    return <div style={cellBlasted} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
-
-                if (is_blasted)
-                    return <div class='cell' style={cellBlasted} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
-
-                if (is_visited && is_bomb)
-                    return <div class='cell' style={cellBomb} onClick={this.handleClick}><span className='fa fa-bomb' style={bombStyle}></span></div>;
-
-
-                if (is_visited && bNum)
-                    return <div class='cell' style={style} onClick={this.handleClick}> <font style={textStyle}>{bNum}</font></div>;
-
-                if (!is_visited && is_flag_set)
-                    return <div class='cell' style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}><span className='fa fa-flag' style={bombStyle}></span></div>;
-
-
-
-                return <div class='cell' style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}> <font style={textStyle}>&nbsp;</font></div>;
-                        
-                    
-            }
-        };
-
-        //raw container style 
-        const rStyle = {
-            color: 'blue',
-            backgroundColor: 'black',
-            //margin: '1px',
-            display: 'inline',
-        };
-
-
-        //matrix row 
-        function ObjectRow(props) {
-            var cells = [];
-            for (var j = 0; j < props.x; j++) {
-                cells.push(<ObjectCell key={j} y={props.y} x={j} />);
-            }
-            return <div> {cells} </div>;
-        }
-
-
-        const contStyle = {
-            backgroundColor: 'white',
-            //margin: '1px',
-            //minWidth: '600px',
-            display: 'inline',
-        };
-
-
-        class App extends React.Component {
-            render() {
-
-                var rows = [];
-                for (var i = 0; i < this.props.y; i++) {
-
-                    rows.push(<div style={rStyle}> <ObjectRow key={i} y={i} x={this.props.x} /></div>);
-                }
-                return <div style={contStyle}> {rows} </div>;
-            }
-        };
-
-        //generate random map/matrix 
-        randomMap();
-
-        //and draw matrix on the screen
-        ReactDOM.render(
-            <App x={size_x} y={size_y} />,
-            document.getElementById('root')
+        return (
+          <div className="cell" style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}>
+            <font style={textStyle}>&nbsp;</font>
+          </div>
         );
+      }
+    }
 
-    </script>
+    function ObjectRow(props) {
+      const cells = Array.from({ length: props.x }, (_, j) => (
+        <ObjectCell key={j} y={props.y} x={j} />
+      ));
+      return <div>{cells}</div>;
+    }
 
+    class App extends React.Component {
+      render() {
+        const rows = Array.from({ length: this.props.y }, (_, i) => (
+          <div style={rStyle} key={i}>
+            <ObjectRow y={i} x={this.props.x} />
+          </div>
+        ));
+        return <div style={contStyle}>{rows}</div>;
+      }
+    }
+
+    setGameLevel("Easy");
+    randomMap();
+    ReactDOM.render(<App x={size_x} y={size_y} />, document.getElementById('root'));
+  </script>
 </body>
-
 </html>
