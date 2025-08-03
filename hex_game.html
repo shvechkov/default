@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hex Game with React</title>
+  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <style>
+    @keyframes shake {
+      0% { transform: translate(1px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(3px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+      50% { transform: translate(-1px, 2px) rotate(-1deg); }
+      60% { transform: translate(-3px, 1px) rotate(0deg); }
+      70% { transform: translate(3px, 1px) rotate(-1deg); }
+      80% { transform: translate(-1px, -1px) rotate(1deg); }
+      90% { transform: translate(1px, 2px) rotate(0deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+
+    #overlay {
+      position: fixed;
+      display: none;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="panel panel-default">
+    <div id="overlay"><img src="game_over.gif"></div>
+    <div class="panel-body" style="display: inline-block">
+      <form class="form-inline">
+        <fieldset>
+          <legend>
+            <a href="https://en.wikipedia.org/wiki/Hex_(board_game)">Hex Game</a> with React
+          </legend>
+          <div id="root"></div>
+          <p></p>
+          <div>
+            <div class="form-group">
+              <button type="button" class="btn btn-primary" onclick="newGame(true)">New Game</button>
+            </div>
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
+              Info&nbsp;<span class="badge badge-light" id="status-text">Your Turn (Blue)</span>
+            </button>
+            <div id="myModal" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Hex Game Rules</h4>
+                  </div>
+                  <div class="modal-body">
+                    <ul>
+                      <li>Played on an 11x11 grid (approximating a hexagonal board).</li>
+                      <li>You play as Blue, aiming to connect the top and bottom edges; the AI plays as Red, aiming to connect left and right edges.</li>
+                      <li>Click an empty cell to place a Blue piece.</li>
+                      <li>Goal: Form a continuous path of your pieces connecting your two edges before the AI.</li>
+                      <li>The game ends when one player completes their path.</li>
+                      <li>Piece counts are shown in the progress bar (Blue: X | Red: Y).</li>
+                    </ul>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p></p>
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="121" style="width: 0%" id="progress">
+                <span class="badge badge-light" id="progress-text">Blue: 0 | Red: 0</span>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+  <script type="text/babel">
+    let size = 11; // 11x11 board
+    let board = [];
+    let currentPlayer = 'blue';
+    let blueCount = 0;
+    let redCount = 0;
+    let moveCount = 0;
+    let gameOver = false;
+    let updateCounter = 0; // Global counter to trigger re-renders
+
+    function newGame(redraw) {
+      gameOver = false;
+      currentPlayer = 'blue';
+      blueCount = 0;
+      redCount = 0;
+      moveCount = 0;
+      updateCounter++;
+      document.getElementById("progress").style.width = "0%";
+      document.getElementById("progress-text").innerHTML = "Blue: 0 | Red: 0";
+      document.getElementById("status-text").innerHTML = "Your Turn (Blue)";
+      document.getElementById("root").style.animation = '';
+      document.getElementById("overlay").style.display = "none";
+
+      board = Array(size).fill().map((_, y) =>
+        Array(size).fill().map((_, x) => ({
+          y, x, state: null
+        }))
+      );
+
+      if (redraw) {
+        ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+      }
+    }
+
+    function hasPath(player) {
+      const visited = Array(size).fill().map(() => Array(size).fill(false));
+      const start = player === 'blue' ? Array(size).fill().map((_, x) => ({ y: 0, x })) : Array(size).fill().map((_, y) => ({ y, x: 0 }));
+      const target = player === 'blue' ? size - 1 : size - 1; // Blue: bottom row, Red: right column
+
+      function dfs(y, x) {
+        if (y < 0 || y >= size || x < 0 || x >= size || visited[y][x] || board[y][x].state !== player) {
+          return false;
+        }
+        if ((player === 'blue' && y === target) || (player === 'red' && x === target)) {
+          return true;
+        }
+        visited[y][x] = true;
+        // Hex grid neighbors (6 directions: up-left, up-right, left, right, down-left, down-right)
+        const directions = [[-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0]];
+        for (let [dy, dx] of directions) {
+          if (dfs(y + dy, x + dx)) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      for (let { y, x } of start) {
+        if (board[y][x].state === player && dfs(y, x)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function placePiece(y, x, player) {
+      if (gameOver || board[y][x].state) return false;
+      board[y][x].state = player;
+      if (player === 'blue') {
+        blueCount++;
+      } else {
+        redCount++;
+      }
+      moveCount++;
+      return true;
+    }
+
+    function placeMove(y, x) {
+      if (currentPlayer !== 'blue') return;
+      if (!placePiece(y, x, 'blue')) {
+        alert("Invalid move: Cell is already occupied!");
+        return;
+      }
+      if (hasPath('blue')) {
+        endGame('Blue Wins!');
+        return;
+      }
+      if (moveCount === size * size) {
+        endGame('Draw!');
+        return;
+      }
+      currentPlayer = 'red';
+      document.getElementById("status-text").innerHTML = "AI's Turn (Red)";
+      document.getElementById("progress-text").innerHTML = `Blue: ${blueCount} | Red: ${redCount}`;
+      updateCounter++;
+      ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+      setTimeout(aiMove, 1000); // AI moves after a 1-second delay
+    }
+
+    function aiMove() {
+      if (gameOver || currentPlayer !== 'red') return;
+
+      // Try to win (connect left to right)
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          if (!board[y][x].state) {
+            board[y][x].state = 'red';
+            if (hasPath('red')) {
+              redCount++;
+              moveCount++;
+              endGame('Red Wins!');
+              document.getElementById("status-text").innerHTML = "Red Wins!";
+              document.getElementById("progress-text").innerHTML = `Blue: ${blueCount} | Red: ${redCount}`;
+              updateCounter++;
+              ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+              return;
+            }
+            board[y][x].state = null; // Revert simulation
+          }
+        }
+      }
+
+      // Try to block (Blue's top-to-bottom path)
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          if (!board[y][x].state) {
+            board[y][x].state = 'blue';
+            if (hasPath('blue')) {
+              board[y][x].state = 'red';
+              redCount++;
+              moveCount++;
+              if (hasPath('red')) {
+                endGame('Red Wins!');
+              } else if (moveCount === size * size) {
+                endGame('Draw!');
+              } else {
+                currentPlayer = 'blue';
+                document.getElementById("status-text").innerHTML = "Your Turn (Blue)";
+                document.getElementById("progress-text").innerHTML = `Blue: ${blueCount} | Red: ${redCount}`;
+                updateCounter++;
+                ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+              }
+              return;
+            }
+            board[y][x].state = null; // Revert simulation
+          }
+        }
+      }
+
+      // Strategic move: place near existing Red pieces or center
+      let validMoves = [];
+      const center = Math.floor(size / 2);
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          if (!board[y][x].state) {
+            let score = 0;
+            // Check adjacent cells for Red pieces (within 1 cell, hex neighbors)
+            const directions = [[-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0]];
+            for (let [dy, dx] of directions) {
+              let ny = y + dy;
+              let nx = x + dx;
+              if (ny >= 0 && ny < size && nx >= 0 && nx < size && board[ny][nx].state === 'red') {
+                score += 2; // Nearby Red piece
+              }
+            }
+            // Boost score for center proximity (helps path formation)
+            score += 5 - Math.abs(y - center) - Math.abs(x - center);
+            validMoves.push({ y, x, score });
+          }
+        }
+      }
+      if (validMoves.length === 0) {
+        endGame('Draw!');
+        return;
+      }
+      validMoves.sort((a, b) => b.score - a.score); // Prefer moves near Red pieces or center
+      const move = validMoves[0];
+      board[move.y][move.x].state = 'red';
+      redCount++;
+      moveCount++;
+      if (hasPath('red')) {
+        endGame('Red Wins!');
+        return;
+      }
+      if (moveCount === size * size) {
+        endGame('Draw!');
+        return;
+      }
+      currentPlayer = 'blue';
+      document.getElementById("status-text").innerHTML = "Your Turn (Blue)";
+      document.getElementById("progress-text").innerHTML = `Blue: ${blueCount} | Red: ${redCount}`;
+      updateCounter++;
+      ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+    }
+
+    function endGame(message) {
+      gameOver = true;
+      document.getElementById("progress").style.width = "100%";
+      document.getElementById("progress-text").innerHTML = `Game Over! Blue: ${blueCount} | Red: ${redCount}`;
+      document.getElementById("status-text").innerHTML = message;
+      document.getElementById("overlay").style.display = "block";
+      setTimeout(() => document.getElementById("overlay").style.display = "none", 2000);
+      document.getElementById("root").style.animation = 'shake 0.3s 1';
+      updateCounter++;
+      ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+    }
+
+    const cellStyleEmpty = {
+      width: '30px',
+      height: '30px',
+      backgroundColor: '#f0e68c', // Light yellow board
+      margin: '0.5px',
+      borderRadius: '50%', // Approximate hexagon
+      textAlign: 'center',
+      display: 'inline-table',
+      border: '1px solid #b8860b',
+      transform: 'rotate(45deg)' // Rotate to mimic diamond-shaped hex grid
+    };
+
+    const cellStyleBlue = {
+      width: '30px',
+      height: '30px',
+      backgroundColor: 'blue',
+      margin: '0.5px',
+      borderRadius: '50%',
+      textAlign: 'center',
+      display: 'inline-table',
+      border: '1px solid #00008b',
+      transform: 'rotate(45deg)'
+    };
+
+    const cellStyleRed = {
+      width: '30px',
+      height: '30px',
+      backgroundColor: 'red',
+      margin: '0.5px',
+      borderRadius: '50%',
+      textAlign: 'center',
+      display: 'inline-table',
+      border: '1px solid #8b0000',
+      transform: 'rotate(45deg)'
+    };
+
+    const textStyle = { fontSize: '20px', transform: 'rotate(-45deg)' }; // Counter-rotate text
+    const rStyle = { backgroundColor: '#f0e68c', display: 'inline', transform: 'translateX(10%)' }; // Offset rows for hex effect
+    const contStyle = { backgroundColor: '#f0e68c', display: 'inline' };
+
+    class ObjectCell extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { x: props.x, y: props.y };
+        this.handleClick = this.handleClick.bind(this);
+      }
+
+      shouldComponentUpdate(nextProps) {
+        return nextProps.updateCounter !== this.props.updateCounter;
+      }
+
+      handleClick(e) {
+        e.preventDefault();
+        if (e.type === 'click') {
+          placeMove(this.state.y, this.state.x);
+        }
+      }
+
+      render() {
+        const { x, y } = this.state;
+        const cell = board[y][x];
+        const { state } = cell;
+
+        let style = cellStyleEmpty;
+        if (state === 'blue') style = cellStyleBlue;
+        else if (state === 'red') style = cellStyleRed;
+
+        return (
+          <div className="cell" style={style} onClick={this.handleClick}>
+            <span style={textStyle}>&nbsp;</span>
+          </div>
+        );
+      }
+    }
+
+    function ObjectRow(props) {
+      const cells = Array.from({ length: props.size }, (_, j) => (
+        <ObjectCell key={j} y={props.y} x={j} updateCounter={props.updateCounter} />
+      ));
+      return <div style={{ ...rStyle, transform: `translateX(${(props.y % 2) * 10}px)` }}>{cells}</div>;
+    }
+
+    class App extends React.Component {
+      render() {
+        const rows = Array.from({ length: this.props.size }, (_, i) => (
+          <div key={i}>
+            <ObjectRow y={i} size={this.props.size} updateCounter={this.props.updateCounter} />
+          </div>
+        ));
+        return <div style={contStyle}>{rows}</div>;
+      }
+    }
+
+    newGame();
+    ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+  </script>
+</body>
+</html>
