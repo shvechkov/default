@@ -1,48 +1,77 @@
 # Alexey Shvechkov
 
-**Technical Director | Hands-On Systems, Cloud & AI Architect | Greater Boston, MA**
-
-**Contact**: [alexey@shvechkov.com](mailto:alexey@shvechkov.com) | +1.XXX.XXX.XXX | [LinkedIn](https://linkedin.com) | [GitHub](https://github.com)
+**Location**: Greater Boston, MA  
 
 ## Summary
+**Technical Director | Hands-On Systems, Cloud & AI Architect | From Kernel Drivers to Agentic AI Platforms**  
+Hands-on Technical Director with over 20 years of expertise in architecting scalable systems, cloud-native solutions (AWS, Kubernetes), and AI platforms (LLMs, RAG). Owned end-to-end delivery of three enterprise products generating $15-17M in revenue, leading global teams, coding mission-critical features, and reducing delivery cycles by up to 40% while driving innovation in high-throughput environments.
 
-With over two decades of expertise, I architect, prototype, and deliver scalable enterprise solutions, blending hands-on systems programming, cloud infrastructure, and AI-driven platforms. As a Technical Director, I lead global teams of up to 10 engineers while actively coding and prototyping mission-critical systems, from low-level kernel drivers (Linux/Windows) to advanced AI platforms leveraging LLMs, agentic AI, and cloud-native technologies (AWS, Azure, Kubernetes). My hands-on contributions include designing high-throughput systems, fine-tuning transformer-based models, and rapidly prototyping solutions like cyber-resilient appliances, reducing delivery cycles by 40%. I drive innovation through agile leadership, R&D excellence, and direct coding in C++, Go, Rust, Python, and modern AI frameworks.
+## Education
+- **M.Sc. in Applied Mathematics**  
+  Institute of Telecommunications and Computer Science, Russia (1996)  
+- **Coursera Machine Learning Specialization**  
+  Stanford Online (2024)  
+- Holder of multiple certifications in storage and infrastructure technologies
+
+## Skills
+### Systems Programming
+- Languages: C++, Golang, Rust, Python  
+- Expertise: Linux/Windows kernel drivers (storage stack, eBPF, KMDF/WDM, minifilters, file systems)
+
+### Distributed Systems & Cloud
+- Technologies: AWS (EC2, S3, Lambda/serverless, API Gateway), Azure, Kubernetes, Docker, Terraform  
+- Expertise: Scalable microservices, fault-tolerant architectures, CI/CD pipelines
+
+### AI/ML & LLMs
+- Frameworks: PyTorch, TensorFlow, Hugging Face, Unsloth, LangChain  
+- Expertise: RAG, transformer fine-tuning (full, LoRA), distributed training, hosting models locally  
+- AWS AI/ML Tools: Glue Catalog, ETL, DataBrew, Athena, SageMaker
+
+### Databases
+- RDBMS: PostgreSQL, MySQL  
+- NoSQL: Redis, Cassandra
+
+### Leadership
+- Technical direction, agile execution, mentoring teams of up to 10 engineers
+
+### Additional Skills
+- React, Next.js, scripting, Git, RESTful API design, performance tuning, system-level debugging, rapid prototyping
 
 ## Work Experience
-
-### Technical Director, Software Engineering
-**Arcserve, Greater Boston, MA**  
-**Aug 2014 – Present**  
-*Progressed from Staff Software Engineer → Senior Architect → Product Owner → Technical Director*
+### Technical Director, Software Engineering  
+**Arcserve – Greater Boston, MA | 2014 – Present**  
+*Progressed from Staff SWE to Sr Architect to Product Owner to Technical Director*
 
 #### Leadership & Strategy
-- Provided hands-on technical leadership for AI/ML initiatives and platform modernization, reporting to the CTO.
-- Led high-impact teams of up to 10 engineers across storage, cloud protection, and AI-driven features, defining roadmaps and delivering on schedule.
+- Provided hands-on technical leadership for AI/ML initiatives and platform modernization, reporting to CTO; Owned end-to-end lifecycle of three enterprise products (Replication & High Availability, OneXafe, CloudDirect, $15-17M revenue).  
+- Led multiple high-impact teams of up to 10 engineers across storage, cloud protection, and AI-driven features, defining strategic roadmaps, architecting scalable solutions, and delivering on schedule with up to 40% reduced delivery cycles.  
 - Mentored engineers while actively coding and prototyping, ensuring technical excellence and measurable customer impact.
 
 #### AI/ML Integration & Agentic Systems
-- Architected and prototyped malware/anomaly detection features; coded EDA pipelines, performed feature engineering, trained ML models, and fine-tuned LLMs using Python and C++.
-- Developed and optimized transformer-based masked LLMs via ONNX Runtime for edge inference, writing performance-critical C++ code.
-- Prototyped and coded agentic AI assistants using LangChain and OpenAI, integrating with legacy systems via REST, SOAP, and MCP protocols.
-- Designed and implemented an interactive RAG-based AI assistant, writing core logic and optimizing retrieval pipelines.
-- Architected and coded MCP servers to bridge agentic interfaces with legacy Arcserve UDP APIs.
+- Architected and prototyped malware/anomaly detection features: coded EDA pipelines, performed feature engineering, trained ML models, and fine-tuned LLMs using Python and C++.  
+- Developed and optimized transformer-based masked LLMs via ONNX Runtime for edge inference, writing performance-critical C++ code.  
+- Prototyped and coded agentic AI assistants using LangChain and OpenAI, integrating with legacy systems via REST, SOAP, and MCP protocols (RAG knowledgebase chat bots + agentic backend features – decreased support calls by 20%).  
+- Designed and implemented an interactive RAG-based AI assistant, writing core logic and optimizing retrieval pipelines.  
+- Architected and coded microservices (Model Context Protocol servers) to integrate AI-driven interfaces with legacy APIs.
 
 #### Systems & Product Engineering
-- Architected and coded core Arcserve features, including data deduplication, file system/server replication, high availability (HA), and agentless protection for AWS/Azure workloads (VMs, containers, storage), with hands-on contributions in C++ and Go.
-- Prototyped and developed a Linux-based immutable object-store server (cyber-resilient appliance), writing core components and reducing delivery cycle by 40%.
+- Architected and coded core Arcserve features, including data deduplication, file system/server replication, high availability (HA), and agentless protection for AWS/Azure workloads (VMs, containers, storage), with hands-on contributions in C++ and Go.  
+- Prototyped and developed a Linux-based immutable object-store server (cyber-resilient appliance), writing core components and reducing delivery cycle by 40%, enabling 6-month faster market entry.  
 - Coded system and kernel-level components (file systems, filter drivers) on Windows and Linux for high-throughput backup and replication products.
 
 #### R&D & Innovation
-- Won hackathons for AI and infrastructure prototypes, rapidly coding proof-of-concepts in Rust and Python.
-- Led M&A-influencing projects, performing due diligence and coding prototypes to validate technical feasibility.
+- Won hackathons for AI and infrastructure prototypes, rapidly coding proof-of-concepts in Rust and Python.  
+- Led M&A-influencing projects, performing due diligence and coding prototypes to validate technical feasibility.  
 - Developed kernel-mode anti-malware solutions and email archiving engines, contributing both architecture and implementation.
 
-### Software Engineer / Principal Engineer
-**Yandex, XOsoft, Computer Associates**  
-**1998 – 2009**
+### Early Career
+**Software Engineer / Principal Engineer**  
+**Yandex, XOsoft, Computer Associates | 1998–2014**  
+- Designed and coded high-traffic web applications and CDN modules at Yandex and XOsoft using C++ and Perl, optimizing search, advertising, and content delivery systems for performance and reliability.  
+- Built high-availability data replication modules at XOsoft using C++ and led a team of 5 engineers, later architecting features like deduplication, full system protection, and cloud replication while developing file system drivers for Windows and Linux/Unix at CA to deliver scalable solutions.  
+- Developed an end-to-end build automation system akin to Jenkins for Unix/Linux platforms, integrating a web UI for progress reporting, reducing manual labor by 40–50%, and streamlining QA and production processes.
 
-- Designed and coded high-traffic web applications at Yandex, including search engine, advertising/banner networks, polling systems, and discussion forums in C++ and Perl, driving 50%+ traffic growth and 20% revenue increase for ad platforms.
-- Developed key modules for a content delivery network (CDN) at XOsoft, comparable to Akamai, coding network and system software in C++ to support low-latency content delivery for 10M+ daily users with 99.9% uptime.
-- Implemented system and networking modules for high-availability data replication at XOsoft, writing C++ code to achieve 25% improved throughput for enterprise backup systems.
-- Led a kernel-mode development team of 5 engineers at XOsoft and Computer Associates, mentoring on driver development and delivering scalable storage solutions.
-- Built and automated CI/CD pipelines using PHP and Bash, reducing build times by 30% and enabling rapid iteration for development teams.
+## Open-Source Projects/POCs
+- Deduplicating archiving/backups into S3-compatible storage (Golang) [link](https://github.com/shvechkov/s3stor) 
+- Exposing local file systems via S3 APIs (Golang) [link](https://github.com/shvechkov/gos3rve) 
+- Fast unique file copy/indexes and stores unique files (Rust)[link](https://github.com/shvechkov/ufc)
