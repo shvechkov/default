@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Reversi Game with React</title>
+  <title>Reversi — The Arcade</title>
   <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -11,6 +11,126 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #1a1a1a;
+      padding: 24px 20px 48px;
+    }
+
+    .masthead {
+      text-align: center;
+      max-width: 640px;
+      margin-bottom: 28px;
+    }
+    .kicker {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      font-size: .72rem;
+      color: #777;
+      margin-bottom: 10px;
+    }
+    .masthead h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #121212;
+      margin: 0 0 8px;
+      border-bottom: 2px solid #121212;
+      padding-bottom: 10px;
+    }
+    .masthead .subtitle {
+      font-style: italic;
+      color: #555;
+      font-size: 1rem;
+      margin: 0;
+    }
+    .masthead h1 a { color: #121212; text-decoration: none; }
+    .masthead h1 a:hover { text-decoration: underline; }
+
+    .game-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Board frame */
+    #root {
+      border: 1px solid #121212;
+      padding: 4px;
+      background: #ffffff;
+      display: inline-block;
+    }
+
+    /* NYT buttons */
+    .nyt-btn {
+      background: #ffffff;
+      border: 1px solid #121212;
+      color: #121212;
+      text-transform: uppercase;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .8rem;
+      letter-spacing: .05em;
+      padding: 8px 18px;
+      border-radius: 0;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .nyt-btn:hover { background: #121212; color: #ffffff; }
+    .nyt-btn.primary { background: #121212; color: #ffffff; }
+    .nyt-btn.primary:hover { background: #ffffff; color: #121212; }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 22px;
+    }
+
+    .status-label {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .8rem;
+      letter-spacing: .04em;
+      color: #555;
+    }
+    #status-text {
+      color: #121212;
+      font-weight: 600;
+    }
+
+    .score {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .85rem;
+      color: #555;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid #e2e2e2;
+      width: 100%;
+      text-align: center;
+    }
+    #progress-text { color: #121212; }
+
+    .site-footer {
+      margin-top: 36px;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .8rem;
+    }
+    .site-footer a { color: #326891; text-decoration: none; }
+    .site-footer a:hover { text-decoration: underline; }
+
+    /* Info modal restyle */
+    .modal-content { border-radius: 0; }
+    .modal-title { font-family: Georgia, "Times New Roman", serif; color: #121212; }
+    .modal-body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #1a1a1a; }
+
     @keyframes shake {
       0% { transform: translate(1px, 1px) rotate(0deg); }
       10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -40,61 +160,60 @@
   </style>
 </head>
 <body>
-  <div class="panel panel-default">
-    <div id="overlay"><img src="game_over.gif"></div>
-    <div class="panel-body" style="display: inline-block">
-      <form class="form-inline">
-        <fieldset>
-          <legend>
-            <a href="https://en.wikipedia.org/wiki/Reversi">Reversi Game</a> with React
-          </legend>
-          <div id="root"></div>
-          <p></p>
-          <div>
-            <div class="form-group">
-              <button type="button" class="btn btn-primary" onclick="newGame(true)">New Game</button>
-            </div>
-            <div class="form-group">
-              <button type="button" class="btn btn-primary" onclick="passTurn()">Pass</button>
-            </div>
-            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
-              Info&nbsp;<span class="badge badge-light" id="status-text">Your Turn (Black)</span>
-            </button>
-            <div id="myModal" class="modal fade" role="dialog">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Reversi Game Rules</h4>
-                  </div>
-                  <div class="modal-body">
-                    <ul>
-                      <li>Played on an 8x8 grid.</li>
-                      <li>You play as Black, and the AI plays as White, taking turns.</li>
-                      <li>Click an empty square to place a disc, flipping opponent discs by sandwiching them between your discs (horizontally, vertically, or diagonally).</li>
-                      <li>Moves must flip at least one opponent disc; otherwise, click "Pass" to skip your turn.</li>
-                      <li>The game ends when neither player can move (board full or no valid moves).</li>
-                      <li>Goal: Have more discs of your color than the AI at the end.</li>
-                      <li>Disc counts are shown in the progress bar (Black: X | White: Y).</li>
-                    </ul>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <p></p>
-            <div class="progress">
-              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%" id="progress">
-                <span class="badge badge-light" id="progress-text">Black: 2 | White: 2</span>
-              </div>
-            </div>
-          </div>
-        </fieldset>
-      </form>
+  <div id="overlay"><img src="game_over.gif"></div>
+
+  <header class="masthead">
+    <div class="kicker">The Arcade</div>
+    <h1><a href="https://en.wikipedia.org/wiki/Reversi">Reversi</a></h1>
+    <p class="subtitle">Black versus the machine, one disc at a time.</p>
+  </header>
+
+  <main class="game-wrap">
+    <div id="root"></div>
+
+    <div class="controls">
+      <button type="button" class="nyt-btn primary" onclick="newGame(true)">New Game</button>
+      <button type="button" class="nyt-btn" onclick="passTurn()">Pass</button>
+      <button type="button" class="nyt-btn" data-toggle="modal" data-target="#myModal">Info</button>
+      <span class="status-label"><span id="status-text">Your Turn (Black)</span></span>
     </div>
-  </div>
+
+    <div class="score">
+      <div class="progress" style="display:none">
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%" id="progress"></div>
+      </div>
+      <span id="progress-text">Black: 2 | White: 2</span>
+    </div>
+
+    <div id="myModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Reversi Game Rules</h4>
+          </div>
+          <div class="modal-body">
+            <ul>
+              <li>Played on an 8x8 grid.</li>
+              <li>You play as Black, and the AI plays as White, taking turns.</li>
+              <li>Click an empty square to place a disc, flipping opponent discs by sandwiching them between your discs (horizontally, vertically, or diagonally).</li>
+              <li>Moves must flip at least one opponent disc; otherwise, click "Pass" to skip your turn.</li>
+              <li>The game ends when neither player can move (board full or no valid moves).</li>
+              <li>Goal: Have more discs of your color than the AI at the end.</li>
+              <li>Disc counts are shown below the board (Black: X | White: Y).</li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="nyt-btn" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <a href="play_games.html">&larr; Back to Games</a>
+  </footer>
 
   <script type="text/babel">
     let size = 8; // 8x8 board
@@ -301,38 +420,39 @@
     const cellStyleEmpty = {
       width: '40px',
       height: '40px',
-      backgroundColor: '#2e8b57', // Green board
+      backgroundColor: '#f4f4f4', // Restrained light board cell
       margin: '1px',
-      borderRadius: '3px',
+      borderRadius: '0',
       textAlign: 'center',
       display: 'inline-table',
-      border: '1px solid #1c5c34'
+      border: '1px solid #e2e2e2'
     };
 
     const cellStyleBlack = {
       width: '40px',
       height: '40px',
-      backgroundColor: 'black',
+      backgroundColor: '#121212',
       margin: '1px',
       borderRadius: '50%',
       textAlign: 'center',
-      display: 'inline-table'
+      display: 'inline-table',
+      border: '1px solid #121212'
     };
 
     const cellStyleWhite = {
       width: '40px',
       height: '40px',
-      backgroundColor: 'white',
+      backgroundColor: '#ffffff',
       margin: '1px',
       borderRadius: '50%',
       textAlign: 'center',
       display: 'inline-table',
-      border: '1px solid #333'
+      border: '1px solid #121212'
     };
 
     const textStyle = { fontSize: '20px' };
-    const rStyle = { backgroundColor: '#2e8b57', display: 'inline' };
-    const contStyle = { backgroundColor: '#2e8b57', display: 'inline' };
+    const rStyle = { backgroundColor: '#ffffff', display: 'inline' };
+    const contStyle = { backgroundColor: '#ffffff', display: 'inline' };
 
     class ObjectCell extends React.Component {
       constructor(props) {

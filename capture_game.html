@@ -11,6 +11,163 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #1a1a1a;
+      padding: 24px 20px 48px;
+    }
+
+    .masthead {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .masthead .kicker {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      font-size: .72rem;
+      color: #777;
+      margin: 0 0 6px;
+    }
+
+    .masthead h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #121212;
+      margin: 0;
+      line-height: 1.1;
+    }
+
+    .masthead .subtitle {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      color: #555;
+      margin: 8px 0 0;
+      font-size: 1.05rem;
+    }
+
+    .game-shell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .board-frame {
+      border: 1px solid #121212;
+      padding: 0;
+      background: #f4f4f4;
+      display: inline-block;
+    }
+
+    .controls {
+      margin-top: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nyt-btn {
+      background: #ffffff;
+      border: 1px solid #121212;
+      color: #121212;
+      text-transform: uppercase;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .8rem;
+      letter-spacing: .05em;
+      padding: 8px 18px;
+      border-radius: 0;
+      cursor: pointer;
+      line-height: 1.2;
+      transition: background .15s ease, color .15s ease;
+    }
+
+    .nyt-btn:hover,
+    .nyt-btn:focus {
+      background: #121212;
+      color: #ffffff;
+      text-decoration: none;
+      outline: none;
+    }
+
+    .nyt-btn--primary {
+      background: #121212;
+      color: #ffffff;
+    }
+
+    .nyt-btn--primary:hover,
+    .nyt-btn--primary:focus {
+      background: #ffffff;
+      color: #121212;
+    }
+
+    .status-line {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .8rem;
+      letter-spacing: .04em;
+      color: #555;
+      margin-top: 18px;
+      text-align: center;
+    }
+
+    .status-line .status-value {
+      color: #121212;
+      font-weight: 700;
+    }
+
+    .score-line {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .8rem;
+      letter-spacing: .04em;
+      color: #555;
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    .site-footer {
+      margin-top: 40px;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .8rem;
+    }
+
+    .site-footer a {
+      color: #326891;
+      text-decoration: none;
+    }
+
+    .site-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* NYT-styled rules modal */
+    .nyt-modal .modal-content {
+      border-radius: 0;
+      border: 1px solid #121212;
+      box-shadow: none;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #1a1a1a;
+    }
+
+    .nyt-modal .modal-header,
+    .nyt-modal .modal-footer {
+      border-color: #e2e2e2;
+    }
+
+    .nyt-modal .modal-title {
+      font-family: Georgia, "Times New Roman", serif;
+      color: #121212;
+      font-weight: 700;
+    }
+
     @keyframes shake {
       0% { transform: translate(1px, 1px) rotate(0deg); }
       10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -40,61 +197,60 @@
   </style>
 </head>
 <body>
-  <div class="panel panel-default">
-    <div id="overlay"><img src="game_over.gif"></div>
-    <div class="panel-body" style="display: inline-block">
-      <form class="form-inline">
-        <fieldset>
-          <legend>Capture Game with React</legend>
-          <div id="root"></div>
-          <p></p>
-          <div>
-            <div class="form-group">
-              <button type="button" class="btn btn-primary" onclick="newGame(true)">New Game</button>
-            </div>
-            <div class="form-group">
-              <button type="button" class="btn btn-primary" onclick="passTurn()">Pass</button>
-            </div>
-            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
-              Info&nbsp;<span class="badge badge-light" id="status-text">Your Turn (Black)</span>
-            </button>
-            <div id="myModal" class="modal fade" role="dialog">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Capture Game Rules</h4>
-                  </div>
-                  <div class="modal-body">
-                    <ul>
-                      <li>Played on a 9x9 grid of intersections.</li>
-                      <li>You play as Black, and the AI plays as White, taking turns.</li>
-                      <li>Click an empty intersection to place a stone.</li>
-                      <li>Stones connect horizontally or vertically to form groups.</li>
-                      <li>A group is captured and removed if it has no empty adjacent intersections (liberties).</li>
-                      <li>Click "Pass" to skip your turn; two consecutive passes end the game.</li>
-                      <li>Moves that leave your group without liberties are illegal.</li>
-                      <li>Goal: Capture more of the AI’s stones than it captures of yours.</li>
-                      <li>Captured stones are shown in the progress bar (Black: X | White: Y).</li>
-                    </ul>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <p></p>
-            <div class="progress">
-              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%" id="progress">
-                <span class="badge badge-light" id="progress-text">Black: 0 | White: 0</span>
-              </div>
-            </div>
-          </div>
-        </fieldset>
-      </form>
+  <div id="overlay"><img src="game_over.gif"></div>
+
+  <header class="masthead">
+    <p class="kicker">The Arcade</p>
+    <h1>Capture</h1>
+    <p class="subtitle">A game of stones, liberties, and quiet conquest</p>
+  </header>
+
+  <main class="game-shell">
+    <div class="board-frame">
+      <div id="root"></div>
     </div>
-  </div>
+
+    <div class="controls">
+      <button type="button" class="nyt-btn nyt-btn--primary" onclick="newGame(true)">New Game</button>
+      <button type="button" class="nyt-btn" onclick="passTurn()">Pass</button>
+      <button type="button" class="nyt-btn" data-toggle="modal" data-target="#myModal">Rules</button>
+    </div>
+
+    <p class="status-line">Status: <span class="status-value" id="status-text">Your Turn (Black)</span></p>
+    <p class="score-line"><span id="progress-text">Black: 0 | White: 0</span></p>
+    <span id="progress" style="display:none"></span>
+
+    <div id="myModal" class="modal fade nyt-modal" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Capture Game Rules</h4>
+          </div>
+          <div class="modal-body">
+            <ul>
+              <li>Played on a 9x9 grid of intersections.</li>
+              <li>You play as Black, and the AI plays as Red, taking turns.</li>
+              <li>Click an empty intersection to place a stone.</li>
+              <li>Stones connect horizontally or vertically to form groups.</li>
+              <li>A group is captured and removed if it has no empty adjacent intersections (liberties).</li>
+              <li>Click "Pass" to skip your turn; two consecutive passes end the game.</li>
+              <li>Moves that leave your group without liberties are illegal.</li>
+              <li>Goal: Capture more of the AI’s stones than it captures of yours.</li>
+              <li>Captured stones are shown in the score line (Black: X | White: Y).</li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="nyt-btn" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <a href="play_games.html">← Back to Games</a>
+  </footer>
 
   <script type="text/babel">
     let size = 9; // 9x9 board
@@ -314,41 +470,49 @@
       directions.forEach(([dy, dx]) => removeGroup(y + dy, x + dx, player, visited));
     }
 
-    const cellStyleEmpty = {
+    const cellBase = {
       width: '30px',
       height: '30px',
-      backgroundColor: '#d2b48c', // Wood-like board color
-      margin: '0.5px',
-      borderRadius: '3px',
+      boxSizing: 'border-box',
+      margin: '0',
       textAlign: 'center',
-      display: 'inline-table',
-      border: '1px solid #8b5a2b'
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      verticalAlign: 'top',
+      border: '1px solid #e2e2e2'
+    };
+
+    const cellStyleEmpty = {
+      ...cellBase,
+      backgroundColor: '#f4f4f4'
     };
 
     const cellStyleBlack = {
-      width: '30px',
-      height: '30px',
-      backgroundColor: 'black',
-      margin: '0.5px',
-      borderRadius: '50%',
-      textAlign: 'center',
-      display: 'inline-table'
+      ...cellBase,
+      backgroundColor: '#f4f4f4'
     };
 
     const cellStyleWhite = {
-      width: '30px',
-      height: '30px',
-      backgroundColor: 'white',
-      margin: '0.5px',
-      borderRadius: '50%',
-      textAlign: 'center',
-      display: 'inline-table',
-      border: '1px solid #333'
+      ...cellBase,
+      backgroundColor: '#f4f4f4'
     };
 
-    const textStyle = { fontSize: '20px' };
-    const rStyle = { backgroundColor: '#d2b48c', display: 'inline' };
-    const contStyle = { backgroundColor: '#d2b48c', display: 'inline' };
+    // Round stones rendered inside the cell.
+    const stoneBase = {
+      display: 'inline-block',
+      width: '22px',
+      height: '22px',
+      borderRadius: '50%',
+      verticalAlign: 'middle'
+    };
+
+    const stoneBlack = { ...stoneBase, backgroundColor: '#121212' };
+    const stoneRed = { ...stoneBase, backgroundColor: '#b03a2e' };
+
+    const textStyle = { fontSize: '20px', lineHeight: '28px' };
+    const rStyle = { display: 'block', lineHeight: 0, fontSize: 0 };
+    const contStyle = { backgroundColor: '#f4f4f4', display: 'block' };
 
     class ObjectCell extends React.Component {
       constructor(props) {
@@ -377,9 +541,13 @@
         if (stone === 'black') style = cellStyleBlack;
         else if (stone === 'white') style = cellStyleWhite;
 
+        let stoneEl = <span style={textStyle}>&nbsp;</span>;
+        if (stone === 'black') stoneEl = <span style={stoneBlack}></span>;
+        else if (stone === 'white') stoneEl = <span style={stoneRed}></span>;
+
         return (
           <div className="cell" style={style} onClick={this.handleClick}>
-            <span style={textStyle}>&nbsp;</span>
+            {stoneEl}
           </div>
         );
       }

@@ -1,309 +1,637 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classic Games Collection</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Arial', sans-serif;
-        }
-        
-        .header {
-            text-align: center;
-            color: white;
-            padding: 40px 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .header h1 {
-            font-size: 3.5em;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-        
-        .header p {
-            font-size: 1.3em;
-            opacity: 0.9;
-        }
-        
-        .games-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        .game-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 3px solid transparent;
-        }
-        
-        .game-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            border-color: #667eea;
-        }
-        
-        .game-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
-            display: block;
-            text-align: center;
-        }
-        
-        .game-title {
-            font-size: 2em;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        
-        .game-description {
-            color: #666;
-            font-size: 1.1em;
-            line-height: 1.6;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .game-features {
-            list-style: none;
-            padding: 0;
-            margin: 20px 0;
-        }
-        
-        .game-features li {
-            color: #555;
-            padding: 5px 0;
-            font-size: 0.95em;
-        }
-        
-        .game-features li:before {
-            content: "✓ ";
-            color: #28a745;
-            font-weight: bold;
-            margin-right: 8px;
-        }
-        
-        .play-button {
-            background: linear-gradient(45deg, #28a745, #20c997);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-size: 1.1em;
-            font-weight: bold;
-            width: 100%;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .play-button:hover {
-            background: linear-gradient(45deg, #218838, #1ea07c);
-            transform: scale(1.05);
-        }
-        
-        .footer {
-            text-align: center;
-            color: rgba(255,255,255,0.8);
-            padding: 40px 0;
-            margin-top: 50px;
-        }
-        
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2.5em;
-            }
-            
-            .game-card {
-                margin-bottom: 20px;
-                padding: 20px;
-            }
-            
-            .games-container {
-                padding: 0 15px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alexey Shvechkov — Technical Director &amp; Principal Engineer</title>
+  <meta name="description" content="Hands-on technical leader with 20+ years building scalable systems, cloud-native platforms, and AI/ML solutions. Projects, open-source repos, and a retro game collection.">
+  <style>
+    :root {
+      --ink: #121212;
+      --body: #1a1a1a;
+      --muted: #555555;
+      --faint: #777777;
+      --line: #e2e2e2;
+      --rule: #121212;
+      --link: #326891;
+      --hl: #fbf3cf;          /* pale highlight yellow */
+      --hl-line: #e0c54a;
+      --serif: Georgia, "Times New Roman", "Cheltenham", "Droid Serif", serif;
+      --sans: "Helvetica Neue", Helvetica, Arial, "Libre Franklin", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #ffffff;
+      color: var(--body);
+      font-family: var(--serif);
+      font-size: 1.06rem;
+      line-height: 1.62;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .wrap {
+      width: min(740px, 100%);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ---------- Hero / masthead ---------- */
+    .hero {
+      padding: 56px 0 40px;
+      display: grid;
+      gap: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      font-family: var(--sans);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(2.6rem, 6vw, 3.9rem);
+      line-height: 1.05;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    .hero .role {
+      margin: 0;
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .hero p.lead {
+      margin: 0;
+      font-size: 1.22rem;
+      line-height: 1.55;
+      color: var(--body);
+    }
+
+    .hero .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 14px;
+      font-family: var(--sans);
+      font-size: 0.84rem;
+      color: var(--faint);
+    }
+
+    .hero .meta span { display: inline-flex; align-items: center; }
+    .hero .meta span + span::before {
+      content: "·";
+      margin-right: 14px;
+      color: var(--line);
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      font-family: var(--sans);
+      padding: 9px 18px;
+      border: 1px solid var(--ink);
+      background: #ffffff;
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: background 120ms ease, color 120ms ease;
+    }
+
+    .btn:hover { background: var(--ink); color: #ffffff; text-decoration: none; }
+
+    .btn.primary { background: var(--ink); color: #ffffff; }
+    .btn.primary:hover { background: #3a3a3a; }
+
+    /* ---------- Sections ---------- */
+    section { padding: 38px 0; border-bottom: 1px solid var(--line); }
+    section:last-of-type { border-bottom: 0; }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    .section-head .hint {
+      font-family: var(--sans);
+      color: var(--faint);
+      font-size: 0.82rem;
+      text-align: right;
+    }
+
+    /* ---------- Skills ---------- */
+    .skill-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      background: #ffffff;
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+
+    .skill-box {
+      background: #ffffff;
+      padding: 18px 20px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    /* When a view is active, the table border becomes dotted */
+    body[data-view] .skill-grid {
+      border-top-style: dotted;
+      border-left-style: dotted;
+    }
+
+    body[data-view] .skill-box {
+      border-right-style: dotted;
+      border-bottom-style: dotted;
+    }
+
+    .skill-box h4 {
+      margin: 0 0 10px;
+      font-family: var(--sans);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .chip {
+      font-family: var(--sans);
+      padding: 3px 9px;
+      border: 1px solid var(--line);
+      background: #fafafa;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+
+    /* ---------- Experience ---------- */
+    .timeline { display: grid; }
+
+    .exp {
+      padding: 22px 0;
+      border-top: 1px solid var(--line);
+    }
+    .exp:first-child { border-top: 0; padding-top: 0; }
+
+    .exp .row1 {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 4px 12px;
+    }
+
+    .exp h3 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 1.24rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .exp .when {
+      font-family: var(--sans);
+      color: var(--faint);
+      font-size: 0.8rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .exp .what { margin: 10px 0 0; color: var(--body); font-size: 1.04rem; }
+
+    .bullets {
+      margin: 14px 0 0;
+      padding-left: 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .bullets li { color: var(--body); font-size: 1.02rem; }
+    .bullets li::marker { color: var(--faint); }
+    .bullets li strong { color: var(--ink); font-weight: 700; }
+
+    .bullets .stack {
+      display: block;
+      margin-top: 6px;
+      font-family: var(--sans);
+      color: var(--faint);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .misc-line { font-size: 1.1rem; color: var(--body); }
+
+    /* ---------- Footer ---------- */
+    footer {
+      border-top: 3px double var(--rule);
+      margin-top: 0;
+      padding: 28px 0 48px;
+      text-align: center;
+      font-family: var(--sans);
+      color: var(--faint);
+      font-size: 0.82rem;
+    }
+
+    footer .links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px 18px;
+      margin-bottom: 12px;
+    }
+    footer .links a { font-weight: 600; letter-spacing: 0.02em; }
+
+    /* ---------- Audience view toggle ---------- */
+    .view-toggle {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .toggle-inner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 9px 24px;
+      flex-wrap: wrap;
+    }
+
+    .toggle-label {
+      font-family: var(--sans);
+      color: var(--faint);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .seg {
+      display: inline-flex;
+      border: 1px solid var(--ink);
+    }
+
+    .seg button {
+      border: 0;
+      background: #ffffff;
+      color: var(--ink);
+      padding: 6px 14px;
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: 0.78rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 120ms ease, color 120ms ease;
+    }
+
+    .seg button + button { border-left: 1px solid var(--ink); }
+    .seg button:hover { background: #f0f0f0; }
+    .seg button.active { background: var(--ink); color: #ffffff; }
+
+    .toggle-hint {
+      font-family: var(--sans);
+      font-style: italic;
+      color: var(--faint);
+      font-size: 0.8rem;
+    }
+
+    /* Hide content not relevant to the selected role */
+    body[data-view="mgr"] [data-role="ic"],
+    body[data-view="ic"] [data-role="mgr"] { display: none !important; }
+    body[data-view="mgr"] .stack { display: none; }
+
+    /* Highlight content relevant to the selected role */
+    body[data-view="mgr"] .bullets li[data-role="mgr"],
+    body[data-view="ic"] .bullets li[data-role="ic"] {
+      list-style: none;
+      margin-left: -22px;
+      padding: 10px 14px;
+      border-left: 3px solid var(--hl-line);
+      background: var(--hl);
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 40px 0 32px; }
+      .skill-grid { grid-template-columns: minmax(0, 1fr); }
+      .toggle-inner { gap: 10px; }
+      .section-head { flex-direction: column; gap: 4px; }
+      .section-head .hint { text-align: left; }
+    }
+  </style>
 </head>
 <body>
-    <div class="header">
-        <h1><i class="fa fa-gamepad"></i> Classic Games Collection</h1>
-        <p>Choose your favorite game and start playing instantly!</p>
+
+  <!-- ===== Audience view toggle ===== -->
+  <div class="view-toggle">
+    <div class="wrap toggle-inner">
+      <span class="toggle-label">View as</span>
+      <div class="seg" role="group" aria-label="Audience view">
+        <button data-view="off" class="active" aria-pressed="true">Off</button>
+        <button data-view="mgr" aria-pressed="false">As Manager</button>
+        <button data-view="ic" aria-pressed="false">As IC</button>
+      </div>
+      <span class="toggle-hint" id="toggleHint"></span>
     </div>
+  </div>
 
-    <div class="games-container">
-        <div class="row">
-            <!-- Tic-Tac-Toe -->
-            <div class="col-md-6 col-lg-4">
-                <div class="game-card" onclick="location.href='tic0tac-toe_game.html'">
-                    <div class="game-icon" style="color: #e74c3c;">⭕</div>
-                    <div class="game-title">Tic-Tac-Toe</div>
-                    <div class="game-description">
-                        Classic 3x3 grid game where you try to get three in a row before your opponent.
-                    </div>
-                    <ul class="game-features">
-                        <li>Simple and intuitive gameplay</li>
-                        <li>Perfect for quick matches</li>
-                        <li>Timeless strategy game</li>
-                    </ul>
-                    <button class="play-button">
-                        <i class="fa fa-play"></i> Play Now
-                    </button>
-                </div>
-            </div>
+  <!-- ===== Hero ===== -->
+  <header class="wrap hero">
+    <span class="eyebrow">Personal Profile</span>
+    <h1>Alexey Shvechkov</h1>
+    <p class="role">Technical Director &amp; Principal Software Engineer at Arcserve</p>
+    <p class="lead">
+      Hands-on technical leader with <strong>20+ years</strong> architecting scalable systems —
+      from Linux/Windows kernel drivers to cloud-native platforms and AI/ML solutions
+      (LLMs, RAG, anomaly detection). I lead global teams while still writing the
+      mission-critical code. Patent holder and open-source contributor.
+    </p>
+    <div class="meta">
+      <span>Greater Boston, MA</span>
+      <span>M.Sc. Applied Mathematics</span>
+      <span>Storage · Cloud · Cybersecurity · AI</span>
+    </div>
+    <div class="cta-row">
+      <a class="btn primary" href="Alexey_Shvechkov_CV.pdf" target="_blank" rel="noopener">Download CV</a>
+      <a class="btn" href="https://www.linkedin.com/in/alexey-shvechkov/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn" href="https://github.com/shvechkov" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn" href="mailto:jobs@shvechkov.com">Email</a>
+    </div>
+  </header>
 
-            <!-- Connect Four -->
-            <div class="col-md-6 col-lg-4">
-                <div class="game-card" onclick="location.href='connect4_game.html'">
-                    <div class="game-icon" style="color: #f39c12;">🔴</div>
-                    <div class="game-title">Connect Four</div>
-                    <div class="game-description">
-                        Drop your colored discs and be the first to connect four in a row vertically, horizontally, or diagonally.
-                    </div>
-                    <ul class="game-features">
-                        <li>Strategic depth</li>
-                        <li>Easy to learn, hard to master</li>
-                        <li>Gravity-based gameplay</li>
-                    </ul>
-                    <button class="play-button">
-                        <i class="fa fa-play"></i> Play Now
-                    </button>
-                </div>
-            </div>
+  <main class="wrap">
 
-            <!-- Checkers -->
-            <div class="col-md-6 col-lg-4">
-                <div class="game-card" onclick="location.href='checkers_game.html'">
-                    <div class="game-icon" style="color: #8b0000;">♛</div>
-                    <div class="game-title">Checkers</div>
-                    <div class="game-description">
-                        Move your pieces diagonally and capture opponents by jumping over them. Reach the end to become a king!
-                    </div>
-                    <ul class="game-features">
-                        <li>Classic board game</li>
-                        <li>AI opponent included</li>
-                        <li>King promotion system</li>
-                    </ul>
-                    <button class="play-button">
-                        <i class="fa fa-play"></i> Play Now
-                    </button>
-                </div>
-            </div>
-
-            <!-- Reversi/Othello -->
-            <div class="col-md-6 col-lg-4">
-                <div class="game-card" onclick="location.href='reversi_game.html'">
-                    <div class="game-icon" style="color: #2c3e50;">⚫</div>
-                    <div class="game-title">Reversi</div>
-                    <div class="game-description">
-                        Place your discs to trap opponent pieces between yours and flip them to your color. Control the board!
-                    </div>
-                    <ul class="game-features">
-                        <li>Strategic positioning</li>
-                        <li>Dynamic board control</li>
-                        <li>Reversal mechanics</li>
-                    </ul>
-                    <button class="play-button">
-                        <i class="fa fa-play"></i> Play Now
-                    </button>
-                </div>
-            </div>
-
-            <!-- Minesweeper -->
-            <div class="col-md-6 col-lg-4">
-                <div class="game-card" onclick="location.href='minesweeper_game.html'">
-                    <div class="game-icon" style="color: #e67e22;">💣</div>
-                    <div class="game-title">Minesweeper</div>
-                    <div class="game-description">
-                        Clear the minefield by revealing safe squares. Use number clues to deduce mine locations.
-                    </div>
-                    <ul class="game-features">
-                        <li>Logic and deduction</li>
-                        <li>Multiple difficulty levels</li>
-                        <li>Classic puzzle gameplay</li>
-                    </ul>
-                    <button class="play-button">
-                        <i class="fa fa-play"></i> Play Now
-                    </button>
-                </div>
-            </div>
-
-            <!-- Hex Game -->
-            <div class="col-md-6 col-lg-4">
-                <div class="game-card" onclick="location.href='hex_game.html'">
-                    <div class="game-icon" style="color: #9b59b6;">⬡</div>
-                    <div class="game-title">Hex</div>
-                    <div class="game-description">
-                        Connect your edges by forming an unbroken chain across the hexagonal board before your opponent.
-                    </div>
-                    <ul class="game-features">
-                        <li>Unique hexagonal grid</li>
-                        <li>Pure strategy game</li>
-                        <li>No luck involved</li>
-                    </ul>
-                    <button class="play-button">
-                        <i class="fa fa-play"></i> Play Now
-                    </button>
-                </div>
-            </div>
-
-            <!-- Capture Game -->
-            <div class="col-md-6 col-lg-4">
-                <div class="game-card" onclick="location.href='capture_game.html'">
-                    <div class="game-icon" style="color: #16a085;">🎯</div>
-                    <div class="game-title">Capture Game</div>
-                    <div class="game-description">
-                        Strategic capture-based gameplay where you outmaneuver your opponent to control the board.
-                    </div>
-                    <ul class="game-features">
-                        <li>Territory control</li>
-                        <li>Strategic thinking</li>
-                        <li>Tactical gameplay</li>
-                    </ul>
-                    <button class="play-button">
-                        <i class="fa fa-play"></i> Play Now
-                    </button>
-                </div>
-            </div>
+    <!-- ===== Skills ===== -->
+    <section id="skills">
+      <div class="section-head">
+        <h2>What I Work With</h2>
+        <span class="hint">Leadership across the full stack — kernel to cloud to AI</span>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-box" data-role="mgr">
+          <h4>Leadership &amp; Strategy</h4>
+          <div class="chips">
+            <span class="chip">Team leadership (10+ yrs)</span><span class="chip">Technical strategy</span><span class="chip">Roadmap planning</span>
+            <span class="chip">Mentoring</span><span class="chip">Hiring</span><span class="chip">Product ownership</span>
+            <span class="chip">Cross-functional influence</span><span class="chip">Cost optimization</span>
+          </div>
         </div>
-    </div>
+        <div class="skill-box" data-role="ic">
+          <h4>Languages</h4>
+          <div class="chips">
+            <span class="chip">C++</span><span class="chip">Go</span><span class="chip">Python</span>
+            <span class="chip">Rust</span><span class="chip">Perl</span><span class="chip">Bash</span>
+          </div>
+        </div>
+        <div class="skill-box" data-role="ic">
+          <h4>AI / ML</h4>
+          <div class="chips">
+            <span class="chip">LLMs &amp; RAG</span><span class="chip">PyTorch</span><span class="chip">TensorFlow</span>
+            <span class="chip">Hugging Face</span><span class="chip">LangChain</span><span class="chip">ONNX Runtime</span>
+            <span class="chip">Anomaly Detection</span>
+          </div>
+        </div>
+        <div class="skill-box" data-role="ic">
+          <h4>Cloud &amp; Distributed</h4>
+          <div class="chips">
+            <span class="chip">AWS</span><span class="chip">Azure</span><span class="chip">Kubernetes</span>
+            <span class="chip">Docker</span><span class="chip">Terraform</span><span class="chip">gRPC</span>
+          </div>
+        </div>
+        <div class="skill-box" data-role="ic">
+          <h4>Systems Programming</h4>
+          <div class="chips">
+            <span class="chip">Linux kernel</span><span class="chip">Windows minifilters</span><span class="chip">eBPF</span>
+            <span class="chip">File systems</span><span class="chip">OpenZFS</span><span class="chip">Performance</span>
+          </div>
+        </div>
+        <div class="skill-box" data-role="ic">
+          <h4>Storage &amp; Data</h4>
+          <div class="chips">
+            <span class="chip">Object storage / S3</span><span class="chip">Deduplication</span><span class="chip">PostgreSQL</span>
+            <span class="chip">Redis</span><span class="chip">Cassandra</span>
+          </div>
+        </div>
+        <div class="skill-box" data-role="ic">
+          <h4>Frontend &amp; APIs</h4>
+          <div class="chips">
+            <span class="chip">React</span><span class="chip">Next.js</span><span class="chip">REST</span>
+            <span class="chip">FastAPI</span><span class="chip">MCP</span>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <div class="footer">
-        <p><i class="fa fa-heart" style="color: #e74c3c;"></i> Enjoy your gaming experience!</p>
-        <p>All games are playable directly in your browser - no downloads required.</p>
-    </div>
+    <!-- ===== Experience ===== -->
+    <section id="experience">
+      <div class="section-head">
+        <h2>Professional Experience</h2>
+        <span class="hint">Full history in my <a href="Alexey_Shvechkov_CV.pdf" target="_blank" rel="noopener">CV</a></span>
+      </div>
+      <div class="timeline">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    
-    <script>
-        // Add some interactive effects
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add click sound effect (optional)
-            const gameCards = document.querySelectorAll('.game-card');
-            gameCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-8px) scale(1.02)';
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0) scale(1)';
-                });
-            });
+        <div class="exp">
+          <div class="row1"><h3>Arcserve — Technical Director, Software Engineering</h3><span class="when">2014 – Present · Greater Boston, MA</span></div>
+          <p class="what">
+            Hands-on technical leader for backup, storage, and data-protection products. Lead and mentor
+            distributed teams (5–15 engineers), own technical strategy and roadmaps, and still write
+            mission-critical code. Technically led the company's AI/ML strategy as head of the
+            "innovation group." Selected projects from the last few years:
+          </p>
+          <ul class="bullets">
+            <li>
+              <strong>ML-Powered Ransomware &amp; Anomaly Detection</strong> — Architected and built an engine
+              that detects ransomware traces and anomalies in air-gapped backups using ML and statistical
+              models. Designed and trained classifiers (Random Forest, XGBoost) and BERT-based LLMs for
+              threat detection, plus automated training and telemetry pipelines for model evaluation.
+              Reduced ransomware incident response &amp; recovery time by <strong>~70%</strong>.
+              <span class="stack">Windows internals (MFT, ReFS, USN, mini-filters) · BERT/LLMs · Isolation Forest · Prophet · FAISS · ONNX Runtime · YARA · AWS Glue/SageMaker · C/C++ · Python (NumPy, TensorFlow, Hugging Face)</span>
+            </li>
+            <li>
+              <strong>Agentic RAG Troubleshooting Chatbot</strong> — Designed and implemented an end-to-end
+              multimodal chatbot integrated with products via APIs/MCP for monitoring, troubleshooting, and
+              documentation Q&amp;A, with visual UI guidance and anomaly detection. Reduced support calls by
+              <strong>~15%</strong>.
+              <span class="stack">OpenAI API · LangChain · RAG · Ollama · Hugging Face · AWS Lambda · FastAPI &amp; FastMCP · React</span>
+            </li>
+            <li>
+              <strong>Azure Workloads Protection (Backup &amp; Replication)</strong> — Architected and
+              prototyped a massively parallel, scalable Kubernetes-based SaaS to protect and restore Azure
+              workloads (VMs, containers, k8s, blob storage); implemented critical components and led the team
+              through design and delivery.
+              <span class="stack">Go · Azure SDK · Kubernetes · containers · Terraform · gRPC/Protobuf · Redis</span>
+            </li>
+            <li>
+              <strong>Cyber-Resilient Storage Appliance</strong> — Architected and prototyped an immutable
+              storage appliance on hardened Linux + OpenZFS with self-healing storage, immutable snapshots,
+              and backup integration. Accelerated product delivery by <strong>30–40%</strong> via reusable
+              prototypes.
+              <span class="stack">Linux internals · OpenZFS · Python · Go (S3-compatible connector)</span>
+            </li>
+            <li>
+              <strong>Ransomware Protection Module (Windows)</strong> — Developed a Windows minifilter driver
+              and user-mode service to protect backup services and data from tampering — a Windows equivalent
+              of AppArmor.
+              <span class="stack">Windows internals · minifilters (IFS/WDK)</span>
+            </li>
+            <li data-role="mgr">
+              <strong>Team &amp; product leadership</strong> — Led teams (5–15) maintaining high-availability
+              host/VM replication (RHA), a scalable archival storage appliance with a distributed
+              fault-tolerant file system (OneXafe), and SaaS backup of on-prem data (Cloud Direct). Won
+              hackathon awards; owned hiring, mentoring, and performance reviews.
+            </li>
+          </ul>
+        </div>
+
+        <div class="exp">
+          <div class="row1"><h3>CA Technologies (formerly Computer Associates) — Principal Engineer</h3><span class="when">2006 – 2014 · Greater Boston, MA</span></div>
+          <p class="what">
+            Led post-acquisition integration of XOsoft's replication technologies into CA's enterprise
+            portfolio. Designed and developed high-availability replication, deduplication, and backup
+            features in C/C++ for Windows and Linux. Built a Unix/Linux build-automation framework with a
+            web UI that cut manual effort by <strong>50%</strong>.
+          </p>
+        </div>
+
+        <div class="exp">
+          <div class="row1"><h3>XOsoft (acquired by CA Technologies, 2006) — Lead Software Engineer</h3><span class="when">2000 – 2006 · Israel</span></div>
+          <p class="what">
+            Designed and built CDN components — network management/monitoring tools and high-traffic HTTP/FTP
+            caching proxies — alongside replication solutions. Led development of kernel-mode drivers and
+            file-system modules in C/C++, improving system performance and reliability.
+          </p>
+        </div>
+
+        <div class="exp">
+          <div class="row1"><h3>Yandex — Software Engineer</h3><span class="when">1998 – 2000 · Moscow, Russia</span></div>
+          <p class="what">
+            Developed high-traffic search, an advertising network, and web applications in C++ and Perl,
+            optimizing performance for large-scale systems.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== Education ===== -->
+    <section id="education">
+      <div class="section-head">
+        <h2>Education &amp; Recognition</h2>
+      </div>
+      <div class="timeline">
+        <div class="exp">
+          <div class="row1"><h3>M.Sc., Applied Mathematics</h3><span class="when">1996</span></div>
+          <p class="what">Institute of Telecommunications and Computer Science, Russia.</p>
+        </div>
+        <div class="exp">
+          <div class="row1"><h3>Machine Learning Specialization — Stanford Online</h3><span class="when">2024</span></div>
+          <p class="what">Certificate. Holder of multiple U.S. patents in storage and infrastructure technologies.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Misc / Fun ===== -->
+    <section id="misc">
+      <div class="section-head">
+        <h2>Misc / Fun</h2>
+      </div>
+      <p class="misc-line">
+        When I'm not shipping production systems, I
+        <a href="https://github.com/shvechkov" target="_blank" rel="noopener">tinker</a>,
+        hike, do sports, and <a href="play_games.html">chill</a>.
+      </p>
+    </section>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="wrap">
+    <div class="links">
+      <a href="https://github.com/shvechkov" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/alexey-shvechkov/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:jobs@shvechkov.com">jobs@shvechkov.com</a>
+      <a href="Alexey_Shvechkov_CV.pdf" target="_blank" rel="noopener">CV (PDF)</a>
+      <a href="play_games.html">Retro Games</a>
+    </div>
+    <p>© 2026 Alexey Shvechkov · Built by hand, no frameworks required.</p>
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+      var buttons = document.querySelectorAll(".seg button[data-view]");
+      var hint = document.getElementById("toggleHint");
+      var hints = {
+        off: "",
+        mgr: "Leadership & strategy highlighted · deep technical detail hidden",
+        ic: "Technical depth highlighted · management-only items hidden"
+      };
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var view = btn.getAttribute("data-view");
+          buttons.forEach(function (other) {
+            var active = other === btn;
+            other.classList.toggle("active", active);
+            other.setAttribute("aria-pressed", active ? "true" : "false");
+          });
+          if (view === "off") {
+            document.body.removeAttribute("data-view");
+          } else {
+            document.body.setAttribute("data-view", view);
+          }
+          hint.textContent = hints[view] || "";
         });
-    </script>
+      });
+    }());
+  </script>
+
 </body>
 </html>

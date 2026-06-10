@@ -37,20 +37,222 @@
       z-index: 2;
       cursor: pointer;
     }
+
+    /* ===== NYT newspaper theme ===== */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #1a1a1a;
+      padding: 24px 20px 48px;
+    }
+
+    /* Masthead */
+    .masthead {
+      text-align: center;
+      max-width: 640px;
+      margin-bottom: 28px;
+    }
+    .masthead .kicker {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      font-size: .72rem;
+      color: #777;
+      margin: 0 0 8px;
+    }
+    .masthead h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #121212;
+      margin: 0;
+      line-height: 1.1;
+    }
+    .masthead .subtitle {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      color: #555;
+      font-size: 1rem;
+      margin: 10px 0 0;
+    }
+    .masthead .rule {
+      border: 0;
+      border-top: 1px solid #121212;
+      margin: 18px auto 0;
+      width: 80px;
+    }
+
+    /* Reset Bootstrap panel/legend wrappers */
+    .panel.panel-default {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .panel-body {
+      padding: 0;
+      display: flex !important;
+      flex-direction: column;
+      align-items: center;
+    }
+    .form-inline { text-align: center; }
+    fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    legend {
+      border: 0;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      font-size: .72rem;
+      color: #777;
+      text-align: center;
+      margin: 0 0 16px;
+      width: auto;
+    }
+    legend a { color: #326891; text-decoration: none; }
+    legend a:hover { text-decoration: underline; }
+
+    /* Board container centering */
+    #root { display: inline-block; margin: 0 auto; }
+
+    /* Controls */
+    .form-group { display: inline-block; margin: 0; }
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    /* NYT buttons (override Bootstrap) */
+    .btn, .btn:focus {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      text-transform: uppercase;
+      font-size: .8rem;
+      letter-spacing: .05em;
+      padding: 8px 18px;
+      border-radius: 0;
+      border: 1px solid #121212;
+      background: #ffffff;
+      color: #121212;
+      box-shadow: none;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      outline: none;
+    }
+    .btn:hover, .btn:active {
+      background: #121212;
+      color: #ffffff;
+    }
+    .btn.btn-primary {
+      background: #121212;
+      color: #ffffff;
+      border-color: #121212;
+    }
+    .btn.btn-primary:hover {
+      background: #ffffff;
+      color: #121212;
+    }
+
+    /* Status badge in Info button */
+    #status-text.badge {
+      background: transparent;
+      color: inherit;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    /* Progress / status bar */
+    .progress {
+      width: 220px;
+      height: 22px;
+      margin: 20px auto 0;
+      background: #f4f4f4;
+      border: 1px solid #e2e2e2;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .progress-bar {
+      background: #121212;
+      border-radius: 0;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: width .3s;
+    }
+    #progress-text.badge {
+      background: transparent;
+      color: #fff;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .7rem;
+      font-weight: 400;
+      letter-spacing: .03em;
+      white-space: nowrap;
+    }
+    /* keep label legible when bar is empty/narrow */
+    .progress-bar[style*="width: 0%"] #progress-text.badge { color: #555; }
+
+    /* Modal NYT restyle */
+    .modal-content {
+      border-radius: 0;
+      border: 1px solid #121212;
+      box-shadow: none;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #1a1a1a;
+    }
+    .modal-header { border-bottom: 1px solid #e2e2e2; }
+    .modal-title {
+      font-family: Georgia, "Times New Roman", serif;
+      color: #121212;
+      font-weight: 700;
+    }
+    .modal-footer { border-top: 1px solid #e2e2e2; }
+
+    /* Footer back link */
+    .site-footer {
+      margin-top: 40px;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .8rem;
+    }
+    .site-footer a { color: #326891; text-decoration: none; }
+    .site-footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+  <header class="masthead">
+    <p class="kicker">The Arcade</p>
+    <h1>Tic-Tac-Toe</h1>
+    <p class="subtitle">A classic game of three in a row, played against the machine</p>
+    <hr class="rule">
+  </header>
+
   <div class="panel panel-default">
     <div id="overlay"><img src="game_over.gif"></div>
     <div class="panel-body" style="display: inline-block">
       <form class="form-inline">
         <fieldset>
           <legend>
-            <a href="https://en.wikipedia.org/wiki/Tic-tac-toe">Tic-Tac-Toe Game</a> with React
+            <a href="https://en.wikipedia.org/wiki/Tic-tac-toe">About Tic-Tac-Toe</a>
           </legend>
           <div id="root"></div>
-          <p></p>
-          <div>
+          <div class="controls-row">
             <div class="form-group">
               <button type="button" class="btn btn-primary" onclick="newGame(true)">New Game</button>
             </div>
@@ -80,17 +282,20 @@
                 </div>
               </div>
             </div>
-            <p></p>
-            <div class="progress">
-              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="9" style="width: 0%" id="progress">
-                <span class="badge badge-light" id="progress-text">X: 0 | O: 0</span>
-              </div>
+          </div>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="9" style="width: 0%" id="progress">
+              <span class="badge badge-light" id="progress-text">X: 0 | O: 0</span>
             </div>
           </div>
         </fieldset>
       </form>
     </div>
   </div>
+
+  <footer class="site-footer">
+    <a href="play_games.html">&larr; Back to Games</a>
+  </footer>
 
   <script type="text/babel">
     let size = 3; // 3x3 board
@@ -277,49 +482,29 @@
       ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
     }
 
-    const cellStyleEmpty = {
-      width: '60px',
-      height: '60px',
-      backgroundColor: '#d3d3d3', // Light gray board
-      margin: '2px',
-      borderRadius: '5px',
+    const cellStyleBase = {
+      width: '64px',
+      height: '64px',
+      backgroundColor: '#f4f4f4',
+      margin: '3px',
+      borderRadius: '0',
       textAlign: 'center',
       display: 'inline-table',
-      border: '1px solid #888',
-      fontSize: '40px',
-      lineHeight: '60px'
+      border: '1px solid #e2e2e2',
+      fontSize: '38px',
+      lineHeight: '64px',
+      fontFamily: 'Georgia, "Times New Roman", serif',
+      cursor: 'pointer'
     };
 
-    const cellStyleX = {
-      width: '60px',
-      height: '60px',
-      backgroundColor: '#d3d3d3',
-      margin: '2px',
-      borderRadius: '5px',
-      textAlign: 'center',
-      display: 'inline-table',
-      border: '1px solid #888',
-      fontSize: '40px',
-      lineHeight: '60px',
-      color: 'blue'
-    };
+    const cellStyleEmpty = { ...cellStyleBase };
 
-    const cellStyleO = {
-      width: '60px',
-      height: '60px',
-      backgroundColor: '#d3d3d3',
-      margin: '2px',
-      borderRadius: '5px',
-      textAlign: 'center',
-      display: 'inline-table',
-      border: '1px solid #888',
-      fontSize: '40px',
-      lineHeight: '60px',
-      color: 'red'
-    };
+    const cellStyleX = { ...cellStyleBase, color: '#121212' };
 
-    const rStyle = { backgroundColor: '#d3d3d3', display: 'inline' };
-    const contStyle = { backgroundColor: '#d3d3d3', display: 'inline' };
+    const cellStyleO = { ...cellStyleBase, color: '#b03a2e' };
+
+    const rStyle = { backgroundColor: 'transparent', display: 'block', whiteSpace: 'nowrap' };
+    const contStyle = { backgroundColor: 'transparent', display: 'inline-block' };
 
     class ObjectCell extends React.Component {
       constructor(props) {

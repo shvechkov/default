@@ -11,6 +11,189 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #1a1a1a;
+      padding: 24px 20px 48px;
+    }
+
+    /* Masthead */
+    .masthead {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .masthead .kicker {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      font-size: .72rem;
+      color: #777;
+      margin: 0 0 8px;
+    }
+    .masthead h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #121212;
+      margin: 0;
+      line-height: 1.1;
+    }
+    .masthead h1 a {
+      color: #121212;
+      text-decoration: none;
+    }
+    .masthead h1 a:hover {
+      text-decoration: underline;
+    }
+    .masthead .subtitle {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: #555;
+      margin: 8px 0 0;
+    }
+
+    /* Layout container */
+    .nyt-wrap {
+      width: 100%;
+      max-width: 760px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-top: 2px solid #121212;
+      padding-top: 24px;
+    }
+
+    /* NYT buttons */
+    .nyt-btn {
+      background: #ffffff;
+      border: 1px solid #121212;
+      color: #121212;
+      text-transform: uppercase;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .8rem;
+      letter-spacing: .05em;
+      padding: 8px 18px;
+      border-radius: 0;
+      cursor: pointer;
+      line-height: 1.2;
+      transition: background .12s, color .12s;
+    }
+    .nyt-btn:hover,
+    .nyt-btn:focus {
+      background: #121212;
+      color: #ffffff;
+      text-decoration: none;
+      outline: none;
+    }
+    .nyt-btn.primary {
+      background: #121212;
+      color: #ffffff;
+    }
+    .nyt-btn.primary:hover,
+    .nyt-btn.primary:focus {
+      background: #ffffff;
+      color: #121212;
+    }
+    .nyt-btn .caret { color: inherit; }
+
+    /* Controls row */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 22px;
+    }
+    .controls .dropdown { display: inline-block; }
+    .controls .dropdown-menu {
+      border-radius: 0;
+      border: 1px solid #121212;
+      box-shadow: none;
+      padding: 0;
+      min-width: 100%;
+    }
+    .controls .dropdown-menu > li > a {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .8rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: #121212;
+      padding: 8px 18px;
+    }
+    .controls .dropdown-menu > li > a:hover {
+      background: #121212;
+      color: #ffffff;
+    }
+
+    /* Status / counters */
+    .status-text {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #555;
+      font-variant-numeric: tabular-nums;
+      font-size: .82rem;
+    }
+    .nyt-badge {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-variant-numeric: tabular-nums;
+      background: #f4f4f4;
+      color: #555;
+      border-radius: 0;
+      padding: 2px 6px;
+      font-weight: 600;
+    }
+
+    /* Progress bar */
+    .progress {
+      width: 100%;
+      max-width: 420px;
+      height: 22px;
+      background: #ededed;
+      border: 1px solid #e2e2e2;
+      border-radius: 0;
+      box-shadow: none;
+      margin: 22px auto 0;
+    }
+    .progress-bar {
+      background: #121212;
+      box-shadow: none;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .75rem;
+      line-height: 22px;
+    }
+    .progress-bar .nyt-badge {
+      background: transparent;
+      color: #ffffff;
+    }
+
+    /* Footer */
+    .nyt-footer {
+      margin-top: 40px;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .8rem;
+    }
+    .nyt-footer a {
+      color: #326891;
+      text-decoration: none;
+    }
+    .nyt-footer a:hover { text-decoration: underline; }
+
+    /* Modal NYT styling */
+    .modal-content { border-radius: 0; }
+    .modal-title {
+      font-family: Georgia, "Times New Roman", serif;
+      color: #121212;
+    }
+    .modal-body { font-family: Georgia, "Times New Roman", serif; }
+    .modal-body a, .masthead a.link { color: #326891; }
+
     @keyframes shake {
       0% { transform: translate(1px, 1px) rotate(0deg); }
       10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -40,35 +223,35 @@
   </style>
 </head>
 <body>
-  <div class="panel panel-default">
-    <div id="overlay"><img src="boom.gif"></div>
-    <div class="panel-body" style="display: inline-block">
-      <form class="form-inline">
-        <fieldset>
-          <legend>
-            <a href="https://en.wikipedia.org/wiki/Minesweeper_(video_game)">Minesweeper</a> with React
-          </legend>
-          <div id="root"></div>
-          <p></p>
-          <div>
-            <div class="form-group">
-              <button type="button" class="btn btn-primary" onclick="randomMap(true)">New Game</button>
-            </div>
-            <div class="form-group">
-              <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" id="gameLevel">
-                  Easy&nbsp;<span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                  <li onclick="setGameLevel('Easy')"><a href="#">Easy</a></li>
-                  <li onclick="setGameLevel('Medium')"><a href="#">Medium</a></li>
-                  <li onclick="setGameLevel('Hard')"><a href="#">Hard</a></li>
-                </ul>
-              </div>
-            </div>
-            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
-              Info&nbsp;<span class="badge badge-light" id="timer-text">00:00</span>
+  <div id="overlay"><img src="boom.gif"></div>
+
+  <div class="masthead">
+    <p class="kicker">The Arcade</p>
+    <h1><a href="https://en.wikipedia.org/wiki/Minesweeper_(video_game)">Minesweeper</a></h1>
+    <p class="subtitle">A field of hidden mines, one cautious click at a time</p>
+  </div>
+
+  <div class="nyt-wrap">
+    <form class="form-inline" style="text-align:center;">
+      <fieldset style="text-align:center;">
+        <div id="root"></div>
+        <div class="controls">
+          <button type="button" class="nyt-btn primary" onclick="randomMap(true)">New Game</button>
+          <div class="dropdown">
+            <button class="nyt-btn dropdown-toggle" type="button" data-toggle="dropdown" id="gameLevel">
+              Easy&nbsp;<span class="caret"></span>
             </button>
+            <ul class="dropdown-menu">
+              <li onclick="setGameLevel('Easy')"><a href="#">Easy</a></li>
+              <li onclick="setGameLevel('Medium')"><a href="#">Medium</a></li>
+              <li onclick="setGameLevel('Hard')"><a href="#">Hard</a></li>
+            </ul>
+          </div>
+          <button type="button" class="nyt-btn" data-toggle="modal" data-target="#myModal">
+            Info&nbsp;<span class="nyt-badge" id="timer-text">00:00</span>
+          </button>
+        </div>
+        <div>
             <div id="myModal" class="modal fade" role="dialog">
               <div class="modal-dialog">
                 <div class="modal-content">
@@ -97,7 +280,7 @@
                     </ul>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="nyt-btn" data-dismiss="modal">Close</button>
                   </div>
                 </div>
               </div>
@@ -105,12 +288,14 @@
             <p></p>
             <div class="progress">
               <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%" id="progress">
-                <span class="badge badge-light" id="progress-text">0%</span>
+                <span class="nyt-badge" id="progress-text">0%</span>
               </div>
             </div>
           </div>
         </fieldset>
       </form>
+    <div class="nyt-footer">
+      <a href="play_games.html">&larr; Back to Games</a>
     </div>
   </div>
 
@@ -124,14 +309,14 @@
     let startTime = 0;
     let blasted = false;
     const colors = [
-      'rgb(0, 0, 255)',       // 1 bomb: Blue
-      'rgb(0, 128, 255)',     // 2 bombs: Light Blue
-      'rgb(0, 255, 255)',     // 3 bombs: Cyan
-      'rgb(0, 255, 128)',     // 4 bombs: Teal
-      'rgb(0, 255, 0)',       // 5 bombs: Green
-      'rgb(128, 255, 0)',     // 6 bombs: Lime
-      'rgb(255, 128, 0)',     // 7 bombs: Orange
-      'rgb(255, 0, 0)'        // 8 bombs: Red
+      '#2e5aa8',   // 1 bomb: muted blue
+      '#2f7d32',   // 2 bombs: muted green
+      '#b03a2e',   // 3 bombs: muted red
+      '#1a237e',   // 4 bombs: deep indigo
+      '#7b1f1f',   // 5 bombs: dark maroon
+      '#0e6b6b',   // 6 bombs: muted teal
+      '#121212',   // 7 bombs: ink
+      '#555555'    // 8 bombs: gray
     ];
 
     function setGameLevel(level) {
@@ -286,60 +471,70 @@
       exploreLand(y + 1, x + 1);
     }
 
+    // Covered cell (not yet revealed)
     const cellStyle1 = {
-      color: '#ff4500',
+      color: '#1a1a1a',
       width: '30px',
       height: '30px',
-      backgroundColor: '#b8b8ba',
-      margin: '0.5px',
-      borderRadius: '3px',
+      backgroundColor: '#ededed',
+      border: '1px solid #d2d2d2',
+      margin: '0px',
+      borderRadius: '0px',
       textAlign: 'center',
-      display: 'inline-table'
+      display: 'inline-table',
+      fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif'
     };
 
+    // Revealed cell
     const cellStyle0 = {
-      color: 'blue',
+      color: '#1a1a1a',
       width: '30px',
       height: '30px',
-      backgroundColor: '#939495',
-      margin: '0.5px',
-      borderRadius: '3px',
+      backgroundColor: '#ffffff',
+      border: '1px solid #e2e2e2',
+      margin: '0px',
+      borderRadius: '0px',
       textAlign: 'center',
-      display: 'inline-table'
+      display: 'inline-table',
+      fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif'
     };
 
     const cellBlasted = {
-      color: 'black',
+      color: '#ffffff',
       width: '30px',
       height: '30px',
-      backgroundColor: 'red',
-      margin: '0.5px',
-      borderRadius: '3px',
+      backgroundColor: '#b03a2e',
+      border: '1px solid #b03a2e',
+      margin: '0px',
+      borderRadius: '0px',
       textAlign: 'center',
-      display: 'inline-table'
+      display: 'inline-table',
+      fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif'
     };
 
     const cellBomb = {
-      color: 'black',
+      color: '#121212',
       width: '30px',
       height: '30px',
-      backgroundColor: '#939495',
-      margin: '0.5px',
-      borderRadius: '3px',
+      backgroundColor: '#ffffff',
+      border: '1px solid #e2e2e2',
+      margin: '0px',
+      borderRadius: '0px',
       textAlign: 'center',
-      display: 'inline-table'
+      display: 'inline-table',
+      fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif'
     };
 
     const cellStyles = [cellStyle0, cellStyle1];
 
     function cellTextStyle(num) {
-      return { fontSize: '20px', color: colors[num - 1] || 'black' };
+      return { fontSize: '18px', fontWeight: 700, fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif', color: colors[num - 1] || '#121212' };
     }
 
-    const textStyle = { fontSize: '20px' };
-    const bombStyle = { fontSize: '25px' };
-    const rStyle = { color: 'blue', backgroundColor: 'black', display: 'inline' };
-    const contStyle = { backgroundColor: 'white', display: 'inline' };
+    const textStyle = { fontSize: '18px' };
+    const bombStyle = { fontSize: '20px' };
+    const rStyle = { display: 'block', lineHeight: 0 };
+    const contStyle = { backgroundColor: '#ffffff', display: 'inline-block', border: '1px solid #e2e2e2' };
 
     class ObjectCell extends React.Component {
       constructor(props) {
@@ -402,7 +597,7 @@
         if (!visited && flag) {
           return (
             <div className="cell" style={style} onContextMenuCapture={this.handleClick} onClick={this.handleClick}>
-              <span className="fa fa-flag" style={bombStyle}></span>
+              <span className="fa fa-flag" style={{ ...bombStyle, color: '#b03a2e' }}></span>
             </div>
           );
         }

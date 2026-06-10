@@ -37,10 +37,187 @@
       z-index: 2;
       cursor: pointer;
     }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #1a1a1a;
+      padding: 24px 20px 48px;
+    }
+
+    /* Masthead */
+    .masthead {
+      text-align: center;
+      margin-bottom: 28px;
+      max-width: 640px;
+    }
+    .masthead .kicker {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      font-size: .72rem;
+      color: #777;
+      margin: 0 0 8px;
+    }
+    .masthead h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #121212;
+      margin: 0;
+      line-height: 1.1;
+    }
+    .masthead .subtitle {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      color: #555;
+      font-size: 1rem;
+      margin: 8px 0 0;
+    }
+    .masthead .rule {
+      border: none;
+      border-top: 1px solid #121212;
+      margin: 18px auto 0;
+      width: 100%;
+    }
+
+    /* Reset card chrome */
+    .nyt-shell {
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .nyt-shell fieldset { border: none; margin: 0; padding: 0; }
+    .nyt-shell legend { border: none; display: none; }
+
+    /* Board frame */
+    #root {
+      display: inline-block;
+      padding: 10px;
+      background: #121212;
+      border: 1px solid #121212;
+      border-radius: 2px;
+    }
+
+    /* Controls */
+    .nyt-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      margin: 22px 0 4px;
+    }
+    .nyt-btn {
+      background: #ffffff;
+      border: 1px solid #121212;
+      color: #121212;
+      text-transform: uppercase;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .8rem;
+      letter-spacing: .05em;
+      padding: 8px 18px;
+      border-radius: 0;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      line-height: 1.2;
+    }
+    .nyt-btn:hover, .nyt-btn:focus {
+      background: #121212;
+      color: #ffffff;
+      outline: none;
+      text-decoration: none;
+    }
+    .nyt-btn--primary {
+      background: #121212;
+      color: #ffffff;
+    }
+    .nyt-btn--primary:hover, .nyt-btn--primary:focus {
+      background: #ffffff;
+      color: #121212;
+    }
+
+    #status-text {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .75rem;
+      letter-spacing: .04em;
+      color: #555;
+      background: transparent;
+      text-transform: none;
+    }
+    .nyt-btn:hover #status-text, .nyt-btn:focus #status-text { color: #ffffff; }
+
+    /* Progress / score readout */
+    .progress {
+      background: #f4f4f4;
+      border: 1px solid #e2e2e2;
+      border-radius: 0;
+      box-shadow: none;
+      height: 26px;
+      max-width: 360px;
+      margin: 18px auto 0;
+    }
+    .progress-bar {
+      background: #2a2a2a;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #progress-text {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .72rem;
+      letter-spacing: .04em;
+      color: #555;
+      background: transparent;
+      text-transform: none;
+      white-space: nowrap;
+    }
+
+    /* Modal restyle */
+    .modal-content {
+      border: 1px solid #121212;
+      border-radius: 0;
+      box-shadow: none;
+      text-align: left;
+    }
+    .modal-header, .modal-footer { border-color: #e2e2e2; }
+    .modal-title {
+      font-family: Georgia, "Times New Roman", serif;
+      color: #121212;
+    }
+    .modal-body {
+      font-family: Georgia, "Times New Roman", serif;
+      color: #1a1a1a;
+    }
+
+    /* Footer */
+    .nyt-footer {
+      margin-top: 36px;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: .8rem;
+    }
+    .nyt-footer a { color: #326891; text-decoration: none; }
+    .nyt-footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
-  <div class="panel panel-default">
+  <header class="masthead">
+    <p class="kicker">The Arcade</p>
+    <h1>Connect Four</h1>
+    <p class="subtitle">Four in a row, against the machine</p>
+    <hr class="rule">
+  </header>
+  <div class="panel panel-default nyt-shell">
     <div id="overlay"><img src="game_over.gif"></div>
     <div class="panel-body" style="display: inline-block">
       <form class="form-inline">
@@ -50,12 +227,10 @@
           </legend>
           <div id="root"></div>
           <p></p>
-          <div>
-            <div class="form-group">
-              <button type="button" class="btn btn-primary" onclick="newGame(true)">New Game</button>
-            </div>
-            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
-              Info&nbsp;<span class="badge badge-light" id="status-text">Your Turn (Red)</span>
+          <div class="nyt-controls">
+            <button type="button" class="nyt-btn nyt-btn--primary" onclick="newGame(true)">New Game</button>
+            <button type="button" class="nyt-btn" data-toggle="modal" data-target="#myModal">
+              Info&nbsp;<span id="status-text">Your Turn (Red)</span>
             </button>
             <div id="myModal" class="modal fade" role="dialog">
               <div class="modal-dialog">
@@ -75,7 +250,7 @@
                     </ul>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="nyt-btn" data-dismiss="modal">Close</button>
                   </div>
                 </div>
               </div>
@@ -91,6 +266,10 @@
       </form>
     </div>
   </div>
+
+  <footer class="nyt-footer">
+    <a href="play_games.html">← Back to Games</a>
+  </footer>
 
   <script type="text/babel">
     let rows = 6; // 6 rows
@@ -294,38 +473,39 @@
     const cellStyleEmpty = {
       width: '40px',
       height: '40px',
-      backgroundColor: '#1e90ff', // Blue board
-      margin: '1px',
+      backgroundColor: '#f4f4f4', // Empty slot
+      margin: '3px',
       borderRadius: '50%',
       textAlign: 'center',
       display: 'inline-table',
-      border: '1px solid #104e8b'
+      border: '1px solid #2a2a2a'
     };
 
     const cellStyleRed = {
       width: '40px',
       height: '40px',
-      backgroundColor: 'red',
-      margin: '1px',
+      backgroundColor: '#b03a2e', // Muted red
+      margin: '3px',
       borderRadius: '50%',
       textAlign: 'center',
-      display: 'inline-table'
+      display: 'inline-table',
+      border: '1px solid #2a2a2a'
     };
 
     const cellStyleYellow = {
       width: '40px',
       height: '40px',
-      backgroundColor: 'yellow',
-      margin: '1px',
+      backgroundColor: '#c9a227', // Muted gold/ochre
+      margin: '3px',
       borderRadius: '50%',
       textAlign: 'center',
       display: 'inline-table',
-      border: '1px solid #333'
+      border: '1px solid #2a2a2a'
     };
 
     const textStyle = { fontSize: '20px' };
-    const rStyle = { backgroundColor: '#1e90ff', display: 'inline' };
-    const contStyle = { backgroundColor: '#1e90ff', display: 'inline' };
+    const rStyle = { backgroundColor: '#121212', display: 'inline' };
+    const contStyle = { backgroundColor: '#121212', display: 'inline' };
 
     class ObjectCell extends React.Component {
       constructor(props) {

@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkers Game with React</title>
   <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
@@ -12,24 +13,24 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   <style>
     body {
-      background: #ffffff;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       margin: 0;
-      padding: 24px 20px 48px;
-      font-family: Georgia, "Times New Roman", serif;
-      color: #1a1a1a;
+      padding: 20px;
+      font-family: 'Arial', sans-serif;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
     }
 
     .game-container {
-      background: #ffffff;
-      border-radius: 0;
-      padding: 0;
-      box-shadow: none;
-      width: 100%;
-      max-width: 760px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      width: 75vw;
+      max-width: 900px;
+      min-height: 75vh;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -37,153 +38,92 @@
 
     .game-header {
       text-align: center;
-      margin-bottom: 24px;
-      border-bottom: 1px solid #e2e2e2;
-      padding-bottom: 20px;
-      width: 100%;
-    }
-
-    .kicker {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      text-transform: uppercase;
-      letter-spacing: .14em;
-      font-size: .72rem;
-      color: #777;
-      margin: 0 0 10px;
+      margin-bottom: 30px;
     }
 
     .game-title {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 2.4rem;
-      font-weight: 700;
-      color: #121212;
-      margin: 0 0 8px;
-      text-shadow: none;
+      font-size: 2.5em;
+      color: #333;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }
 
     .game-title a {
-      color: #121212;
+      color: #667eea;
       text-decoration: none;
     }
 
     .game-title a:hover {
-      color: #326891;
-      text-decoration: underline;
-    }
-
-    .game-subtitle {
-      font-family: Georgia, "Times New Roman", serif;
-      font-style: italic;
-      color: #555;
-      font-size: 1.05rem;
-      margin: 0;
+      color: #764ba2;
+      text-decoration: none;
     }
 
     .board-container {
       display: flex;
       justify-content: center;
-      margin: 24px 0;
+      margin: 20px 0;
+      width: 100%;
     }
 
     .controls-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      align-items: center;
-      gap: 14px;
-      margin: 16px 0;
+      gap: 15px;
+      margin: 20px 0;
     }
 
     .btn {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      padding: 8px 18px;
-      font-size: .8rem;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      border-radius: 0;
-      border: 1px solid #121212;
-      background: #ffffff;
-      color: #121212;
-      cursor: pointer;
-      transition: background .15s ease, color .15s ease;
-    }
-
-    .btn:hover,
-    .btn:focus {
-      background: #121212;
-      color: #ffffff;
+      padding: 12px 24px;
+      font-size: 1.1em;
+      border-radius: 8px;
+      border: none;
+      transition: all 0.3s ease;
     }
 
     .btn-primary {
-      background: #121212;
-      color: #ffffff;
-      border: 1px solid #121212;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
     }
 
-    .btn-primary:hover,
-    .btn-primary:focus {
-      background: #ffffff;
-      color: #121212;
+    .btn-primary:hover {
+      background: linear-gradient(45deg, #5a6fd8, #6a4190);
+      transform: translateY(-2px);
     }
 
     .btn-info {
-      background: #ffffff;
-      color: #121212;
-      border: 1px solid #121212;
+      background: linear-gradient(45deg, #17a2b8, #138496);
+      color: white;
     }
 
-    .btn-info:hover,
-    .btn-info:focus {
-      background: #121212;
-      color: #ffffff;
+    .btn-info:hover {
+      background: linear-gradient(45deg, #138496, #117a8b);
+      transform: translateY(-2px);
     }
 
     .progress {
       width: 100%;
       max-width: 500px;
-      height: 26px;
-      border-radius: 0;
-      margin: 18px 0;
+      height: 30px;
+      border-radius: 15px;
+      margin: 20px 0;
       overflow: hidden;
-      box-shadow: none;
-      background: #f4f4f4;
-      border: 1px solid #e2e2e2;
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
     }
 
     .progress-bar {
       height: 100%;
-      background: #121212;
-      border-radius: 0;
+      background: linear-gradient(45deg, #28a745, #20c997);
+      border-radius: 15px;
       transition: width 0.6s ease;
     }
 
     .badge {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      font-size: .78rem;
-      padding: 6px 12px;
-      border-radius: 0;
-      background: #555;
-      color: #ffffff;
-    }
-
-    .site-footer {
-      margin-top: 28px;
-      padding-top: 18px;
-      border-top: 1px solid #e2e2e2;
-      width: 100%;
-      max-width: 760px;
-      text-align: center;
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      font-size: .82rem;
-    }
-
-    .site-footer a {
-      color: #326891;
-      text-decoration: none;
-    }
-
-    .site-footer a:hover {
-      text-decoration: underline;
+      font-size: 1em;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: linear-gradient(45deg, #6c757d, #495057);
+      color: white;
     }
 
     @keyframes shake {
@@ -211,49 +151,31 @@
       bottom: 0;
       z-index: 2000;
       cursor: pointer;
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(2px);
-      text-align: center;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(5px);
     }
 
     .modal-content {
-      border-radius: 0;
-      border: 1px solid #121212;
-      box-shadow: none;
-      font-family: Georgia, "Times New Roman", serif;
-      color: #1a1a1a;
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
 
     .modal-header {
-      background: #ffffff;
-      color: #121212;
-      border-radius: 0;
-      border-bottom: 2px solid #121212;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      border-radius: 15px 15px 0 0;
     }
 
     .modal-title {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #121212;
+      font-size: 1.5em;
+      font-weight: bold;
     }
 
     .modal-body {
       padding: 25px;
-      font-size: 1.02rem;
+      font-size: 1.1em;
       line-height: 1.6;
-    }
-
-    .modal-body h5 strong {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      font-size: .9rem;
-      color: #121212;
-    }
-
-    .modal-footer {
-      border-top: 1px solid #e2e2e2;
     }
 
     .modal-body ul {
@@ -264,25 +186,129 @@
       margin: 10px 0;
     }
 
-    /* Responsive design */
+    /* Mobile-first responsive design */
     @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
       .game-container {
-        width: 95vw;
-        padding: 20px;
-        min-height: 90vh;
+        width: 100vw;
+        max-width: none;
+        padding: 15px;
+        min-height: 100vh;
+        border-radius: 0;
+        margin: 0;
       }
 
       .game-title {
-        font-size: 2em;
+        font-size: 1.8em;
+        margin-bottom: 15px;
+      }
+
+      .game-header {
+        margin-bottom: 20px;
+      }
+
+      .game-header p {
+        font-size: 1em !important;
+      }
+
+      .board-container {
+        margin: 15px 0;
+        width: 100%;
+        overflow-x: auto;
       }
 
       .controls-container {
         flex-direction: column;
         align-items: center;
+        gap: 10px;
+        margin: 15px 0;
       }
 
       .btn {
-        width: 200px;
+        width: 90%;
+        max-width: 280px;
+        padding: 15px 20px;
+        font-size: 1em;
+      }
+
+      .progress {
+        max-width: 90%;
+        height: 25px;
+        margin: 15px 0;
+      }
+
+      .badge {
+        font-size: 0.9em;
+        padding: 6px 12px;
+      }
+
+      .modal-dialog {
+        margin: 10px;
+        width: calc(100% - 20px);
+      }
+
+      .modal-body {
+        padding: 20px;
+        font-size: 1em;
+      }
+
+      .modal-title {
+        font-size: 1.3em;
+      }
+    }
+
+    /* Extra small devices (phones in portrait) */
+    @media (max-width: 480px) {
+      .game-title {
+        font-size: 1.5em;
+      }
+
+      .game-header p {
+        font-size: 0.9em !important;
+      }
+
+      .btn {
+        font-size: 0.9em;
+        padding: 12px 16px;
+      }
+
+      .progress {
+        height: 20px;
+      }
+
+      .badge {
+        font-size: 0.8em;
+        padding: 4px 8px;
+      }
+    }
+
+    /* Landscape orientation on mobile */
+    @media (max-width: 768px) and (orientation: landscape) {
+      .game-container {
+        min-height: 95vh;
+        padding: 10px;
+      }
+
+      .game-header {
+        margin-bottom: 15px;
+      }
+
+      .board-container {
+        margin: 10px 0;
+      }
+
+      .controls-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin: 10px 0;
+      }
+
+      .btn {
+        width: auto;
+        min-width: 120px;
       }
     }
   </style>
@@ -292,11 +318,10 @@
     <div id="overlay"><img src="game_over.gif"></div>
     
     <div class="game-header">
-      <p class="kicker">The Arcade</p>
       <h1 class="game-title">
-        <a href="https://en.wikipedia.org/wiki/Draughts">Checkers</a>
+        <a href="https://en.wikipedia.org/wiki/Draughts">🏁 Checkers Game</a>
       </h1>
-      <p class="game-subtitle">Strategic board game with an AI opponent</p>
+      <p style="color: #666; font-size: 1.2em;">Strategic board game with AI opponent</p>
     </div>
 
     <div class="board-container">
@@ -316,7 +341,7 @@
 
     <div class="progress">
       <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="width: 0%" id="progress">
-        <span class="badge" id="progress-text">Red Captured: 0 | Black Captured: 0</span>
+        <span class="badge" id="progress-text">Red Captured: 0 | Beige Captured: 0</span>
       </div>
     </div>
 
@@ -325,8 +350,8 @@
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" style="color: #121212; opacity: 0.8;">&times;</button>
-            <h4 class="modal-title">Checkers — Rules &amp; How to Play</h4>
+            <button type="button" class="close" data-dismiss="modal" style="color: white; opacity: 0.8;">&times;</button>
+            <h4 class="modal-title">🏁 Checkers Rules & How to Play</h4>
           </div>
           <div class="modal-body">
             <h5><strong>🎯 Objective:</strong></h5>
@@ -335,7 +360,7 @@
             <h5><strong>🎮 How to Play:</strong></h5>
             <ul>
               <li><strong>Board:</strong> Played on an 8×8 checkered board using only the 32 dark squares</li>
-              <li><strong>Players:</strong> You play as Red pieces, AI plays as Black pieces</li>
+              <li><strong>Players:</strong> You play as Red pieces, AI plays as Beige pieces</li>
               <li><strong>Movement:</strong> Click a piece, then click an empty dark square to move diagonally forward</li>
               <li><strong>Capturing:</strong> Jump over opponent pieces diagonally to capture them</li>
               <li><strong>Kings:</strong> Pieces reaching the opponent's back row become kings (shown with a crown ♔)</li>
@@ -356,10 +381,6 @@
     </div>
   </div>
 
-  <footer class="site-footer">
-    <a href="play_games.html">← Back to Games</a>
-  </footer>
-
   <script type="text/babel">
     let size = 8; // 8x8 board
     let board = [];
@@ -370,6 +391,33 @@
     let gameOver = false;
     let updateCounter = 0; // Global counter to trigger re-renders
     let selectedPiece = null; // Tracks selected piece for moves
+    let isMobile = window.innerWidth <= 768;
+
+    // Function to detect mobile and adjust cell sizes
+    function getCellSize() {
+      const screenWidth = window.innerWidth;
+      if (screenWidth <= 480) {
+        return 35; // Extra small phones
+      } else if (screenWidth <= 768) {
+        return 42; // Mobile devices
+      } else {
+        return 60; // Desktop
+      }
+    }
+
+    function getPieceSize() {
+      return getCellSize() - 10; // Piece is 10px smaller than cell
+    }
+
+    // Update sizes on window resize
+    window.addEventListener('resize', () => {
+      const wasMobile = isMobile;
+      isMobile = window.innerWidth <= 768;
+      if (wasMobile !== isMobile) {
+        updateCounter++;
+        ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
+      }
+    });
 
     function isDarkSquare(y, x) {
       return (y + x) % 2 === 1; // Dark squares have odd sum of coordinates
@@ -384,7 +432,7 @@
       selectedPiece = null;
       updateCounter++;
       document.getElementById("progress").style.width = "0%";
-      document.getElementById("progress-text").innerHTML = "Red Captured: 0 | Black Captured: 0";
+      document.getElementById("progress-text").innerHTML = "Red Captured: 0 | Beige Captured: 0";
       document.getElementById("status-text").innerHTML = "Your Turn (Red)";
       document.getElementById("root").style.animation = '';
       document.getElementById("overlay").style.display = "none";
@@ -502,10 +550,10 @@
       const beigePieces = countPieces('beige');
       
       if (redPieces === 0) {
-        endGame('🎉 Black Wins! All Red pieces captured!');
+        endGame('🎉 Beige Wins! All Red pieces captured!');
         return true;
       } else if (beigePieces === 0) {
-        endGame('🎉 Red Wins! All Black pieces captured!');
+        endGame('🎉 Red Wins! All Beige pieces captured!');
         return true;
       }
       return false;
@@ -537,8 +585,8 @@
         }
         
         currentPlayer = 'beige';
-        document.getElementById("status-text").innerHTML = "AI's Turn (Black)";
-        document.getElementById("progress-text").innerHTML = `Red Captured: ${redCaptured} | Black Captured: ${beigeCaptured}`;
+        document.getElementById("status-text").innerHTML = "AI's Turn (Beige)";
+        document.getElementById("progress-text").innerHTML = `Red Captured: ${redCaptured} | Beige Captured: ${beigeCaptured}`;
         updateCounter++;
         ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
         setTimeout(aiMove, 1000); // AI moves after a 1-second delay
@@ -576,7 +624,7 @@
         movePiece(move.fromY, move.fromX, move.y, move.x);
       } else {
         // This should not happen in normal gameplay since we only end on piece capture
-        endGame('🎉 Red Wins! AI has no moves left!');
+        endGame('🎉 Red Wins! AI has no moves!');
         return;
       }
 
@@ -589,7 +637,7 @@
       
       currentPlayer = 'red';
       document.getElementById("status-text").innerHTML = "Your Turn (Red)";
-      document.getElementById("progress-text").innerHTML = `Red Captured: ${redCaptured} | Black Captured: ${beigeCaptured}`;
+      document.getElementById("progress-text").innerHTML = `Red Captured: ${redCaptured} | Beige Captured: ${beigeCaptured}`;
       updateCounter++;
       ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
     }
@@ -597,7 +645,7 @@
     function endGame(message) {
       gameOver = true;
       document.getElementById("progress").style.width = "100%";
-      document.getElementById("progress-text").innerHTML = `🏁 Game Over! Red Captured: ${redCaptured} | Black Captured: ${beigeCaptured}`;
+      document.getElementById("progress-text").innerHTML = `🏁 Game Over! Red Captured: ${redCaptured} | Beige Captured: ${beigeCaptured}`;
       document.getElementById("status-text").innerHTML = message;
       document.getElementById("overlay").style.display = "block";
       setTimeout(() => document.getElementById("overlay").style.display = "none", 3000);
@@ -606,129 +654,90 @@
       ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
     }
 
-    // Scaled up cell and piece sizes for better visibility
-    const cellStyleLight = {
-      width: '60px',
-      height: '60px',
-      backgroundColor: '#f4f4f4',
-      margin: '0',
-      textAlign: 'center',
-      display: 'inline-block',
-      verticalAlign: 'top',
-      position: 'relative',
-      border: 'none'
-    };
+    // Dynamic cell and piece styles based on screen size
+    function getCellStyleLight() {
+      const cellSize = getCellSize();
+      return {
+        width: `${cellSize}px`,
+        height: `${cellSize}px`,
+        backgroundColor: '#fff',
+        margin: '1px',
+        textAlign: 'center',
+        display: 'inline-block',
+        verticalAlign: 'top',
+        position: 'relative',
+        border: '1px solid #ddd'
+      };
+    }
 
-    const cellStyleDark = {
-      width: '60px',
-      height: '60px',
-      backgroundColor: '#d9d9d9',
-      margin: '0',
-      borderRadius: '0',
-      textAlign: 'center',
-      display: 'inline-block',
-      verticalAlign: 'top',
-      position: 'relative',
-      border: 'none'
-    };
+    function getCellStyleDark() {
+      const cellSize = getCellSize();
+      return {
+        width: `${cellSize}px`,
+        height: `${cellSize}px`,
+        backgroundColor: '#555',
+        margin: '1px',
+        borderRadius: '3px',
+        textAlign: 'center',
+        display: 'inline-block',
+        verticalAlign: 'top',
+        position: 'relative',
+        border: '1px solid #333'
+      };
+    }
 
-    const pieceStyleRed = {
-      width: '46px',
-      height: '46px',
-      backgroundColor: '#b03a2e',
-      margin: '7px',
-      borderRadius: '50%',
-      border: '2px solid #7a261d',
-      boxShadow: 'inset 0 0 0 3px rgba(255,255,255,0.25)',
-      textAlign: 'center',
-      display: 'block',
-      position: 'absolute',
-      top: '0',
-      left: '0',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease'
-    };
+    function getPieceStyle(color, isKing = false, isSelected = false) {
+      const pieceSize = getPieceSize();
+      const margin = (getCellSize() - pieceSize) / 2;
+      
+      let backgroundColor, borderColor;
+      if (isSelected) {
+        backgroundColor = 'rgba(255, 215, 0, 0.9)';
+        borderColor = '#8b6508';
+      } else if (color === 'red') {
+        backgroundColor = 'rgba(255, 0, 0, 0.8)';
+        borderColor = '#8b0000';
+      } else {
+        backgroundColor = 'rgba(245, 245, 220, 0.9)';
+        borderColor = '#8b7d6b';
+      }
 
-    const pieceStyleBeige = {
-      width: '46px',
-      height: '46px',
-      backgroundColor: '#121212',
-      margin: '7px',
-      borderRadius: '50%',
-      border: '2px solid #000000',
-      boxShadow: 'inset 0 0 0 3px rgba(255,255,255,0.18)',
-      textAlign: 'center',
-      display: 'block',
-      position: 'absolute',
-      top: '0',
-      left: '0',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease'
-    };
+      return {
+        width: `${pieceSize}px`,
+        height: `${pieceSize}px`,
+        backgroundColor,
+        margin: `${margin}px`,
+        borderRadius: '50%',
+        border: `2px solid ${borderColor}`,
+        textAlign: 'center',
+        display: 'block',
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        lineHeight: `${pieceSize - 4}px`,
+        cursor: 'pointer',
+        transition: 'all 0.2s ease',
+        boxShadow: isSelected ? '0 0 10px rgba(255, 215, 0, 0.6)' : 'none'
+      };
+    }
 
-    const pieceStyleRedKing = {
-      width: '46px',
-      height: '46px',
-      backgroundColor: '#b03a2e',
-      margin: '7px',
-      borderRadius: '50%',
-      border: '2px solid #7a261d',
-      boxShadow: 'inset 0 0 0 3px rgba(255,255,255,0.25)',
-      textAlign: 'center',
-      display: 'block',
-      position: 'absolute',
-      top: '0',
-      left: '0',
-      lineHeight: '42px',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease'
-    };
-
-    const pieceStyleBeigeKing = {
-      width: '46px',
-      height: '46px',
-      backgroundColor: '#121212',
-      margin: '7px',
-      borderRadius: '50%',
-      border: '2px solid #000000',
-      boxShadow: 'inset 0 0 0 3px rgba(255,255,255,0.18)',
-      textAlign: 'center',
-      display: 'block',
-      position: 'absolute',
-      top: '0',
-      left: '0',
-      lineHeight: '42px',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease'
-    };
-
-    const pieceStyleSelected = {
-      width: '46px',
-      height: '46px',
-      backgroundColor: '#efe9da',
-      margin: '7px',
-      borderRadius: '50%',
-      border: '2px solid #121212',
-      boxShadow: '0 0 0 3px #121212',
-      textAlign: 'center',
-      display: 'block',
-      position: 'absolute',
-      top: '0',
-      left: '0',
-      lineHeight: '42px',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease'
-    };
-
-    const rStyle = { backgroundColor: 'transparent', display: 'block', textAlign: 'center', lineHeight: '0' };
-    const contStyle = {
-      backgroundColor: '#ffffff',
-      display: 'inline-block',
-      border: '2px solid #121212',
-      borderRadius: '0',
-      padding: '0',
-      boxShadow: 'none'
-    };
+    const rStyle = { backgroundColor: 'transparent', display: 'block', textAlign: 'center' };
+    
+    function getContainerStyle() {
+      const cellSize = getCellSize();
+      const boardSize = (cellSize + 2) * 8 + 10; // 8 cells + margins + padding
+      
+      return { 
+        backgroundColor: '#fff', 
+        display: 'inline-block',
+        border: '3px solid #333',
+        borderRadius: '8px',
+        padding: '5px',
+        boxShadow: '0 8px 25px rgba(0,0,0,0.3)',
+        maxWidth: '100%',
+        width: `${boardSize}px`
+      };
+    }
 
     class ObjectCell extends React.Component {
       constructor(props) {
@@ -754,17 +763,14 @@
         const { state } = cell;
         const isSelected = selectedPiece && selectedPiece.y === y && selectedPiece.x === x;
 
-        const cellStyle = isDarkSquare(y, x) ? cellStyleDark : cellStyleLight;
+        const cellStyle = isDarkSquare(y, x) ? getCellStyleDark() : getCellStyleLight();
         let pieceStyle = null;
         let content = '\u00A0'; // Non-breaking space
-        if (state === 'red') {
-          pieceStyle = isSelected ? pieceStyleSelected : pieceStyleRed;
-        } else if (state === 'beige') {
-          pieceStyle = isSelected ? pieceStyleSelected : pieceStyleBeige;
-        } else if (state === 'red-king') {
-          pieceStyle = isSelected ? pieceStyleSelected : pieceStyleRedKing;
-        } else if (state === 'beige-king') {
-          pieceStyle = isSelected ? pieceStyleSelected : pieceStyleBeigeKing;
+        
+        if (state) {
+          const color = state.includes('red') ? 'red' : 'beige';
+          const isKing = state.includes('king');
+          pieceStyle = getPieceStyle(color, isKing, isSelected);
         }
 
         return (
@@ -772,7 +778,12 @@
             {pieceStyle ? (
               <div style={pieceStyle}>
                 {(state === 'red-king' || state === 'beige-king') ? (
-                  <span style={{fontSize: '24px', color: '#efe9da', fontWeight: 'bold', textShadow: 'none'}}>♔</span>
+                  <span style={{
+                    fontSize: `${Math.max(14, getCellSize() * 0.4)}px`, 
+                    color: '#FFD700', 
+                    fontWeight: 'bold', 
+                    textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
+                  }}>♔</span>
                 ) : null}
               </div>
             ) : content}
@@ -783,24 +794,4 @@
 
     function ObjectRow(props) {
       const cells = Array.from({ length: props.size }, (_, j) => (
-        <ObjectCell key={j} y={props.y} x={j} updateCounter={props.updateCounter} />
-      ));
-      return <div>{cells}</div>;
-    }
-
-    class App extends React.Component {
-      render() {
-        const rows = Array.from({ length: this.props.size }, (_, i) => (
-          <div style={rStyle} key={i}>
-            <ObjectRow y={i} size={this.props.size} updateCounter={this.props.updateCounter} />
-          </div>
-        ));
-        return <div style={contStyle}>{rows}</div>;
-      }
-    }
-
-    newGame();
-    ReactDOM.render(<App size={size} updateCounter={updateCounter} />, document.getElementById('root'));
-  </script>
-</body>
-</html>
+        <ObjectCell key
